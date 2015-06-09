@@ -4,8 +4,7 @@ REST API using [Sequelize](http://www.sequelizejs.com/) models in [express.js](h
 ### Getting started
 ```
 Sequelize = require('sequelize')
-Bald = require('./bald/src/index.coffee')
-
+Bald = require('bald')
 express = require('express')
 bodyParser = require('body-parser')
 http = require('http')

@@ -4,10 +4,7 @@
   "version": "0.1.0",
   "author": "Petru-Sebastian Toader <mail@petrutoader.com>",
   "contributors": [
-    {
-      "name": "Vlad-Ștefan Harbuz",
-      "email": "vlad@vladh.net"
-    }
+    "Vlad-Ștefan Harbuz <vlad@vladh.net>"
   ],
   "main": "src/",
   "repository": {
@@ -28,5 +25,10 @@
   ],
   "dependencies": {
     "inflection": "^1.7.0"
-  }
+  },
+  "homepage": "https://github.com/petrutoader/bald",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "MIT"
 }
