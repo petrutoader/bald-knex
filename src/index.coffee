@@ -20,9 +20,9 @@ class Bald
         singular: '/api/' + plural + '/:id'
       }
 
-    manager = manager(model)
-    controller(@app, endpoint, manager)
+    modelManager = manager(model)
+    controller(@app, endpoint, modelManager)
 
-    return manager
+    return modelManager
 
 module.exports = Bald
