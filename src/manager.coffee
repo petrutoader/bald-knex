@@ -1,23 +1,28 @@
+_ = require 'underscore'
+
+parseArgumentValues = (args) ->
+  return _.values _.pick args, (value) ->
+    return !_.isFunction(value)
+
+parseArgumentFunctions = (args) ->
+  return _.values _.pick args, (value) ->
+    return _.isFunction(value)
+
 makeOperation = (action) ->
   operation = ->
-    operation.hooks.before.map (h) -> h()
-    action.apply(null, arguments)
-    operation.hooks.after.map (h) -> h()
+    oldArgs = arguments
+    args = parseArgumentValues arguments
 
-  operation.hooks = {
-    before: []
-    after: []
-  }
+    args.push () ->
+      values = oldArgs
+      if arguments.length > 0
+        values = parseArgumentValues arguments
+        values.push parseArgumentFunctions(oldArgs)[0]
+      action.apply(null, values)
 
-  operation.addHook = (name, fn) ->
-    operation.hooks[name].push(fn)
-
-  operation.before = (fn) ->
-    operation.addHook('before', fn)
-
-  operation.after = (fn) ->
-    operation.addHook('after', fn)
-
+    operation.before.apply(null, args) if operation.before?
+    action.apply(null, arguments) if !operation.before?
+    operation.after.apply(null, args) if operation.after?
   return operation
 
 module.exports = (model) ->

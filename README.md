@@ -45,19 +45,19 @@ userManager.list (data) ->
 This will output the entire list of entries in the model. Available methods are listed below:
 
 ```
-userManager.create values, (data) ->
+userManager.create values, (err, data) ->
   console.log data
 
-userManager.list (data) ->
+userManager.list (err, data) ->
   console.log data
 
-userManager.read id, (data) ->
+userManager.read id, (err, data) ->
   console.log data
 
-userManager.update id, values, (data) ->
+userManager.update id, values, (err, data) ->
   console.log data
 
-userManager.del id, (data) ->
+userManager.del id, (err, data) ->
   console.log data
 ```
 
@@ -66,8 +66,11 @@ userManager.del id, (data) ->
 You can set behavior for each method in the manager to add functionality before and after the execution of the query:
 
 ```
-userManager.create.before = ->
-  console.log 'This will be executed before creating a user.'
+userManager.create.before = (values, next) ->
+  console.log 'This will be executed before creating a user. You can manipulate values here.'
+
+  # next() can be called without any arguments if you do not want to modify the values
+  next(values)
 
 userManager.create.after = ->
   console.log 'This will be executed after creating a user.'
