@@ -1,0 +1,32 @@
+{
+  "name": "bald",
+  "description": "REST API using [Sequelize](http://www.sequelizejs.com/) models in [express.js](http://expressjs.com/).",
+  "version": "0.1.0",
+  "author": "Petru-Sebastian Toader <mail@petrutoader.com>",
+  "contributors": [
+    {
+      "name": "Vlad-Ștefan Harbuz",
+      "email": "vlad@vladh.net"
+    }
+  ],
+  "main": "src/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petrutoader/bald.git"
+  },
+  "bugs": {
+    "url": "https://github.com/petrutoader/bald/issues"
+  },
+  "keywords": {
+    "sequelize",
+    "sequelizejs",
+    "rest",
+    "restful",
+    "bald",
+    "json",
+    "api"
+  },
+  "dependencies": {
+    "inflection": "^1.7.0"
+  }
+}
