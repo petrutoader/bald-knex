@@ -1,4 +1,5 @@
 _ = require 'underscore'
+async = require 'async'
 
 parseArgumentValues = (args) ->
   return _.values _.pick args, (value) ->
@@ -42,9 +43,17 @@ module.exports = (model) ->
       .catch(done)
 
   update = makeOperation (id, values, done) ->
-    model.update(values, {where: {id: id}})
-      .then((data) -> done(null, data))
-      .catch(done)
+    async.waterfall [
+      (done) ->
+        model.update(values, {where: {id: id}})
+          .then((data) -> done(null))
+          .catch(done)
+      (done) ->
+        model.find({where: {id: id}})
+          .then((data) -> done(null, data))
+          .catch(done)
+    ], (err, data) ->
+      done(err, data)
 
   del = makeOperation (id, done) ->
     model.destroy({where: {id: id}})

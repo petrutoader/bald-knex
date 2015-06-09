@@ -24,7 +24,9 @@
     "api"
   ],
   "dependencies": {
-    "inflection": "^1.7.0"
+    "inflection": "^1.7.0",
+    "async": "^1.2.1",
+    "underscore": "^1.8.3"
   },
   "homepage": "https://github.com/petrutoader/bald",
   "scripts": {
