@@ -17,7 +17,7 @@
   "bugs": {
     "url": "https://github.com/petrutoader/bald/issues"
   },
-  "keywords": {
+  "keywords": [
     "sequelize",
     "sequelizejs",
     "rest",
@@ -25,7 +25,7 @@
     "bald",
     "json",
     "api"
-  },
+  ],
   "dependencies": {
     "inflection": "^1.7.0"
   }
