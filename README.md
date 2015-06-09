@@ -1,5 +1,5 @@
 # bald
-REST API using [Sequelize](http://www.sequelizejs.com/) models in [express.js](http://expressjs.com/).
+REST API generator using [Sequelize](http://www.sequelizejs.com/) models in [express.js](http://expressjs.com/).
 
 ### Getting started
 ```
