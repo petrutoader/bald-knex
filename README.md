@@ -2,7 +2,7 @@
 REST API generator using [Sequelize](http://www.sequelizejs.com/) models in [express.js](http://expressjs.com/).
 
 ### Getting started
-```
+```coffee
 Sequelize = require('sequelize')
 Bald = require('bald')
 express = require('express')
@@ -33,7 +33,7 @@ sequelize.sync({})
 
 You can programmatically call the models once you have defined a bald resource:
 
-```
+```coffee
 userManager = bald.resource({
   model: model
 })
@@ -44,7 +44,7 @@ userManager.list (data) ->
 
 This will output the entire list of entries in the model. Available methods are listed below:
 
-```
+```coffee
 userManager.create values, (err, data) ->
   console.log data
 
@@ -65,7 +65,7 @@ userManager.del id, (err, data) ->
 
 You can set behavior for each method in the manager to add functionality before and after the execution of the query:
 
-```
+```coffee
 userManager.create.before = (values, next) ->
   console.log 'This will be executed before creating a user. You can manipulate values here.'
 
