@@ -1,6 +1,12 @@
 # bald
 REST API generator using [Sequelize](http://www.sequelizejs.com/) models in [express.js](http://expressjs.com/).
 
+### Installing via NPM
+```bash
+npm install bald
+```
+
+
 ### Getting started
 ```coffee
 Sequelize = require('sequelize')
