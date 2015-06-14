@@ -1,11 +1,12 @@
 # bald
 REST API generator using [Sequelize](http://www.sequelizejs.com/) models in [express.js](http://expressjs.com/).
 
+[![npm version](https://badge.fury.io/js/bald.svg)](http://badge.fury.io/js/bald)
+
 ### Installing via NPM
 ```bash
 npm install bald
 ```
-
 
 ### Getting started
 ```coffee
