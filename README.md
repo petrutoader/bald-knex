@@ -17,7 +17,7 @@ bodyParser = require('body-parser')
 http = require('http')
 
 sequelize = new Sequelize('database', 'sqlUser', 'sqlPassword', {host: 'sqlHost'})
-userModel = sequelize.define('User', {name: {type: Sequelize.STRING, allowNull: false}})
+userModel = sequelize.define('User', {name: {type: Sequelize.STRING}})
 
 app = express()
 app.use(bodyParser.json())
@@ -74,9 +74,10 @@ You can set behavior for each method in the manager to add functionality before 
 
 ```coffee
 userManager.create.before = (values, next) ->
-  console.log 'This will be executed before creating a user. You can manipulate values here.'
+  console.log 'You can manipulate values here, before creating.'
 
-  # next() can be called without any arguments if you do not want to modify the values
+  # next() can be called without any arguments 
+  # if you do not want to modify the values
   next(values)
 
 userManager.create.after = ->
