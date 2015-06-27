@@ -64,6 +64,12 @@ userManager.read id, (err, data) ->
 userManager.update id, values, (err, data) ->
   console.log data
 
+# updateMultiple gets an JSON encoded array containing the objects
+# of the entries to be edited, only mandatory field is "id"
+# e.g. [{"id":"2","name":"a"},{"id":"3","name":"b"}]
+userManager.updateMultiple values, (err, data) ->
+  console.log data
+
 userManager.del id, (err, data) ->
   console.log data
 ```
