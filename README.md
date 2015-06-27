@@ -93,6 +93,7 @@ Method | URL | Description
 GET | /api/Users | Displays all users
 GET | /api/Users/1 | Displays one user, searched by id
 PUT | /api/Users/1 | Edits one user, values are sent via req.body
+PUT | /api/Users | Edits multiple entries, values are sent via req.body in JSON format
 POST | /api/Users | Adds one user, values are sent via req.body
 DELETE | /api/Users/1 | Deletes one user, searched by id
 

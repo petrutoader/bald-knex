@@ -35,8 +35,16 @@ module.exports = (app, endpoint, manager) ->
       method: 'put'
       url: endpoint.singular
       handler: (req, res) ->
-        manager.update req.params.id, req.body, (err, data) ->
+        manager.updateOne req.params.id, req.body, (err, data) ->
           sendResponse(res, err, data)
+    }
+    {
+      method: 'put'
+      url: endpoint.plural
+      handler: (req, res) ->
+        values = JSON.parse req.body.values
+        manager.update values, (err, data) ->
+          sendResponse res, err, data
     }
     {
       method: 'delete'
