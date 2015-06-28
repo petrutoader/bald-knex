@@ -80,18 +80,18 @@ userManager.del id, (err, data) ->
 Bald also optionally includes middleware support for each route that is declared:
 
 ```coffee
-isAdmin = (req, res, next) ->
-  console.log 'isAdmin checks!'
+isUser = (req, res, next) ->
+  console.log 'isUser checks!'
   next()
 
 userManager = bald.resource({
   model: model
   middleware: {
-    'list': [isAdmin]
-    'create': [isAdmin]
+    'list': [isAdmin, isUser]
+    'create': [isAdmin, isUser]
     'read': [isUser]
-    'update': [isAdmin]
-    'delete': [isAdmin]
+    'update': [isAdmin, isUser]
+    'delete': [isAdmin, isUser]
   }
 })
 ```
