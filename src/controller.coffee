@@ -8,9 +8,10 @@ sendResponse = (res, err, data) ->
   headers = {'content-type': 'application/json; charset=utf-8'}
   res.set(headers).status(statusCode).end JSON.stringify response
 
-module.exports = (app, endpoint, manager) ->
+module.exports = (app, endpoint, manager, middleware) ->
   routes = [
     {
+      name: 'list'
       method: 'get'
       url: endpoint.plural
       handler: (req, res) ->
@@ -18,6 +19,7 @@ module.exports = (app, endpoint, manager) ->
           sendResponse res, err, data
     }
     {
+      name: 'read'
       method: 'get'
       url: endpoint.singular
       handler: (req, res) ->
@@ -25,6 +27,7 @@ module.exports = (app, endpoint, manager) ->
           sendResponse res, err, data
     }
     {
+      name: 'create'
       method: 'post'
       url: endpoint.plural
       handler: (req, res) ->
@@ -32,6 +35,7 @@ module.exports = (app, endpoint, manager) ->
           sendResponse res, err, data
     }
     {
+      name: 'update'
       method: 'put'
       url: endpoint.singular
       handler: (req, res) ->
@@ -39,6 +43,7 @@ module.exports = (app, endpoint, manager) ->
           sendResponse res, err, data
     }
     {
+      name: 'updateMultiple'
       method: 'put'
       url: endpoint.plural
       handler: (req, res) ->
@@ -47,6 +52,7 @@ module.exports = (app, endpoint, manager) ->
           sendResponse res, err, data
     }
     {
+      name: 'delete'
       method: 'delete'
       url: endpoint.singular
       handler: (req, res) ->
@@ -56,5 +62,4 @@ module.exports = (app, endpoint, manager) ->
   ]
 
   routes.map (route) ->
-    # TODO: Support middleware (isAdmin etc.)
-    app[route.method](route.url, route.handler)
+    app[route.method](route.url, middleware[route.name] || [], route.handler)

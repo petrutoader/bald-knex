@@ -75,6 +75,29 @@ userManager.del id, (err, data) ->
   console.log data
 ```
 
+### Middleware support
+
+Bald also optionally includes middleware support for each route that is declared:
+
+```coffee
+isAdmin = (req, res, next) ->
+  console.log 'isAdmin checks!'
+  next()
+
+userManager = bald.resource({
+  model: model
+  middleware: {
+    'list': [isAdmin]
+    'create': [isAdmin]
+    'read': [isUser]
+    'update': [isAdmin]
+    'delete': [isAdmin]
+  }
+})
+```
+
+You do not need to declare all the routes middleware if none is needed.
+
 ### Customize behavior
 
 You can set behavior for each method in the manager to add functionality before and after the execution of the query:
