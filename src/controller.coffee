@@ -62,4 +62,7 @@ module.exports = (app, endpoint, manager, middleware) ->
   ]
 
   routes.map (route) ->
-    app[route.method](route.url, middleware[route.name] || [], route.handler)
+    routeMiddleware = middleware[route.name] || [] if middleware?
+    routeMiddleware = [] if !middleware?
+
+    app[route.method](route.url, routeMiddleware, route.handler)
