@@ -69,9 +69,9 @@ userManager.update(id, values, function(err, data) {
   console.log(data);
 });
 
-# updateMultiple gets an JSON encoded array containing the objects
-# of the entries to be edited, only mandatory field is "id"
-# e.g. [{"id":"2","name":"a"},{"id":"3","name":"b"}]
+// updateMultiple gets an JSON encoded array containing the objects
+// of the entries to be edited, only mandatory field is "id"
+//  e.g. [{"id":"2","name":"a"},{"id":"3","name":"b"}]
 userManager.updateMultiple(values, function(err, data) {
   console.log(data);
 });
@@ -113,8 +113,8 @@ You can set behavior for each method in the manager to add functionality before 
 userManager.create.before = function(values, next) {
   console.log('You can manipulate values here, before creating.');
 
-  # next() can be called without any arguments
-  # if you do not want to modify the values
+  // next() can be called without any arguments
+  // if you do not want to modify the values
   next(values);
 }
 
