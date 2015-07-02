@@ -22,9 +22,8 @@ makeOperation = (action) ->
       action.apply null, values
 
     operation.before.apply null, args if operation.before?
-    action.apply null, arguments if !operation.before?
-    operation.after.apply null, args if operation.after?
-  return operation
+    sequelizeObject = action.apply null, arguments if !operation.before?
+    operation.after.call null, sequelizeObject if operation.after?
 
 module.exports = (model) ->
   create = makeOperation (values, done) ->
