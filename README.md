@@ -129,14 +129,14 @@ userManager.create.after = function(result) {
 
 Available routes are listed below:
 
-Method | URL | Description
--------|-----| ------------
-GET | /api/Users | Displays all users
-GET | /api/Users/1 | Displays one user, searched by id
-PUT | /api/Users | Edits multiple entries, values are sent via req.body in JSON format
-PUT | /api/Users/1 | Edits one user, values are sent via req.body
-POST | /api/Users | Adds one user, values are sent via req.body
-DELETE | /api/Users/1 | Deletes one user, searched by id
+Manager | Method | URL | Description
+------- | -------|-----| ------------
+userManager.list | GET | /api/Users | Displays all users
+userManager.read | GET | /api/Users/1 | Displays a user, searched by id
+userManager.updateMultiple | PUT | /api/Users | Edits multiple users (JSON format)
+userManager.update | PUT | /api/Users/1 | Edits a user
+userManager.create | POST | /api/Users | Adds a user
+userManager.del | DELETE | /api/Users/1 | Deletes a user
 
 ### Custom endpoints
 
@@ -152,7 +152,7 @@ userManager = bald.resource({
 });
 ```
 
-Please note that the singular must include the id query parameter in the string. If you are specifiyign custom endpoints, both singular and plural endpoints are mandatory.
+Please note that the singular must include the `id` query parameter in the string. If you are specifiyign custom endpoints, both singular and plural endpoints are mandatory.
 
 ### Mentions
 
