@@ -11,17 +11,17 @@ class Bald
   resource: ({model, endpoints, middleware}) ->
     throw new Error 'Invalid model.' if !model?
 
-    endpoints = endpoints || []
-    if endpoints.length == 0
+    endpoints = endpoints || {}
+    if !endpoints.plural? && !endpoints.singular?
       plural = inflection.pluralize model.name
 
-      endpoint = {
+      endpoints = {
         plural: '/api/' + plural
         singular: '/api/' + plural + '/:id'
       }
 
     modelManager = manager model
-    controller @app, endpoint, modelManager, middleware
+    controller @app, endpoints, modelManager, middleware
 
     return modelManager
 

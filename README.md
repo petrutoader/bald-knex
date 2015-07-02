@@ -138,6 +138,22 @@ PUT | /api/Users/1 | Edits one user, values are sent via req.body
 POST | /api/Users | Adds one user, values are sent via req.body
 DELETE | /api/Users/1 | Deletes one user, searched by id
 
+### Custom endpoints
+
+You can declare your own endpoints instead of letting bald pluralize the model's name. In order to do so you'll have to declare the bald resource in the following way:
+
+```javascript
+userManager = bald.resource({
+  model: userModel
+  endpoints: {
+    plural: '/api/CoolUsers'
+    singular: '/api/CoolUsers/:id'
+  }
+});
+```
+
+Please note that the singular must include the id query parameter in the string. If you are specifiyign custom endpoints, both singular and plural endpoints are mandatory.
+
 ### Mentions
 
 Developed at [Phyramid](http://phyramid.com)

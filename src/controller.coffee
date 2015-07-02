@@ -1,12 +1,4 @@
-sendResponse = (res, err, data) ->
-  response = {}
-  response.data = data if data
-  statusCode = 200
-
-  response.error = err if err?
-
-  headers = {'content-type': 'application/json; charset=utf-8'}
-  res.set(headers).status(statusCode).end JSON.stringify response
+{sendResponse} = require('./common')()
 
 module.exports = (app, endpoint, manager, middleware) ->
   routes = [
