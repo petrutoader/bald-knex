@@ -125,7 +125,7 @@ userManager.create.after = function(result) {
 }
 ```
 
-### REST API
+### Manager and REST API
 
 Available routes are listed below:
 
