@@ -8,7 +8,7 @@ class Bald
     @app = app
     @sequelize = sequelize
 
-  resource: ({model, endpoints, middleware}) ->
+  resource: ({model, endpoints, middleware, eagerLoading}) ->
     throw new Error 'Invalid model.' if !model?
 
     endpoints = endpoints || {}
@@ -20,7 +20,7 @@ class Bald
         singular: '/api/' + plural + '/:id'
       }
 
-    modelManager = manager model
+    modelManager = manager model, eagerLoading
     controller @app, endpoints, modelManager, middleware
 
     return modelManager
