@@ -112,23 +112,12 @@ You can set behavior for each method in the manager to add functionality before 
 ```javascript
 userManager.create.before = function(values, next) {
   console.log('You can manipulate values here, before creating.');
-
-  // next() can be called without any arguments
-  // if you do not want to modify the values
   next(values);
 }
 
-userManager.create.after = function() {
+userManager.create.after = function(err, data) {
+  // `data` will be the resulting Sequelize object
   console.log('This will be executed after creating a user.');
-}
-```
-
-You may also modify the default Bald actions:
-
-```javascript
-userManager.create = function(values, next) {
-  console.log('We should create a user and do some custom stuff.');
-  next(result);
 }
 ```
 
