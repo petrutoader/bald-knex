@@ -118,10 +118,17 @@ userManager.create.before = function(values, next) {
   next(values);
 }
 
-userManager.create.after = function(result) {
+userManager.create.after = function() {
   console.log('This will be executed after creating a user.');
-  // the argument `result` will be a Sequelize
-  // object resulting from the operation
+}
+```
+
+You may also modify the default Bald actions:
+
+```javascript
+userManager.create = function(values, next) {
+  console.log('We should create a user and do some custom stuff.');
+  next(result);
 }
 ```
 
