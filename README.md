@@ -140,7 +140,7 @@ You can declare your own endpoints instead of letting bald pluralize the model's
 
 ```javascript
 userManager = bald.resource({
-  model: userModel
+  model: userModel,
   endpoints: {
     plural: '/api/CoolUsers'
     singular: '/api/CoolUsers/:id'
@@ -149,6 +149,18 @@ userManager = bald.resource({
 ```
 
 Please note that the singular must include the `id` query parameter in the string. If you are specifiyign custom endpoints, both singular and plural endpoints are mandatory.
+
+
+### Eager Loading
+
+You may also tell Bald to eagerly load all the data when initializing the resource:
+
+```javascript
+userManager = bald.resource({
+  model: userModel,
+  eagerLoading: true
+});
+```
 
 ### Mentions
 
