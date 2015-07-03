@@ -55,7 +55,7 @@ module.exports = ->
           if operation.after?
             next = ->
               done()
-            operation.after.apply(null, dataArgs.concat(next))
+            operation.after.apply(null, dataArgs.concat([valueArgs]).concat(next))
           else
             done()
       ]
