@@ -61,7 +61,8 @@ userManager.list(function(err, data) {
   console.log(data);
 });
 
-userManager.read(id, function(err, data) {
+// e.g. {id: 1}
+userManager.read({property: query}, function(err, data) {
   console.log(data);
 });
 
@@ -130,7 +131,7 @@ Manager | Method | URL | Description
 userManager.list | GET | /api/Users | Displays all users
 userManager.read | GET | /api/Users/1 | Displays a user, searched by id
 userManager.updateMultiple | PUT | /api/Users | Edits multiple users (JSON format)
-userManager.update | PUT | /api/Users/1 | Edits a user
+userManager.update({id: 1}, ... | PUT | /api/Users/1 | Edits a user
 userManager.create | POST | /api/Users | Adds a user
 userManager.del | DELETE | /api/Users/1 | Deletes a user
 

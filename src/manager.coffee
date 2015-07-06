@@ -15,8 +15,8 @@ module.exports = (model, eagerLoading) ->
       .then (data) -> done null, data
       .catch done
 
-  read = makeOperation (id, done) ->
-    query = where: id: id
+  read = makeOperation (whereQuery, done) ->
+    query = where: whereQuery
     query.include = all: true, nested: true if eagerLoading?
 
     model.find query

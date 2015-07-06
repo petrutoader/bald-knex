@@ -15,7 +15,7 @@ module.exports = (app, endpoint, manager, middleware) ->
       method: 'get'
       url: endpoint.singular
       handler: (req, res) ->
-        manager.read req.params.id, (err, data) ->
+        manager.read id: req.params.id, (err, data) ->
           sendResponse res, err, data
     }
     {
