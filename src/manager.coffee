@@ -40,7 +40,7 @@ module.exports = (model, eagerLoading) ->
       done err, data
 
   updateMultiple = makeOperation (values, done) ->
-    query = where: id: value.id
+    query = where: id: values.id
     query.include = all: true, nested: true if eagerLoading?
 
     updateValue = (value, done) ->
