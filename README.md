@@ -116,9 +116,10 @@ userManager.create.before = function(values, next) {
   next(values);
 }
 
-userManager.create.after = function(err, data) {
+userManager.create.after = function(err, data, next) {
   // `data` will be the resulting Sequelize object
   console.log('This will be executed after creating a user.');
+  next(data)
 }
 ```
 

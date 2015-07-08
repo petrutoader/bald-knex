@@ -42,7 +42,7 @@ module.exports = ->
         #   called with.
         (newValueArgs, done) ->
           next = ->
-            operationDone.apply(null, [].slice.call(arguments))
+            operationDone.apply(null, [].slice.call(arguments)) if !operation.after?
             done(null, [].slice.call(arguments))
           action.apply(null, newValueArgs.concat(next))
 
@@ -54,8 +54,9 @@ module.exports = ->
         (dataArgs, done) ->
           if operation.after?
             next = ->
+              operationDone.apply(null, [].slice.call(arguments))
               done()
-            operation.after.apply(null, dataArgs.concat([valueArgs]).concat(next))
+            operation.after.apply(null, dataArgs.concat(next).concat([valueArgs]))
           else
             done()
       ]
