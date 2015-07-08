@@ -40,16 +40,16 @@ module.exports = (model, eagerLoading) ->
       done err, data
 
   updateMultiple = makeOperation (values, done) ->
-    query = where: id: values.id
-    query.include = all: true, nested: true if eagerLoading?
-
     updateValue = (value, done) ->
       async.waterfall [
         (done) ->
-          model.update value, query
+          model.update value, where: id: value.id
             .then (data) -> done null
             .catch done
         (done) ->
+          query = where: id: value.id
+          query.include = all: true, nested: true if eagerLoading?
+
           model.find query
             .then (data) -> done null, value
             .catch done
