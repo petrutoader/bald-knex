@@ -1,6 +1,10 @@
 {sendResponse} = require('./common')()
+_ = require('underscore')
 
 module.exports = (app, endpoint, manager, middleware) ->
+  pageResults = (data, count, page) ->
+    return _.first(_.rest(data, count * page), count)
+
   routes = [
     {
       name: 'list'
@@ -8,6 +12,7 @@ module.exports = (app, endpoint, manager, middleware) ->
       url: endpoint.plural
       handler: (req, res) ->
         manager.list (err, data) ->
+          data = pageResults(data, req.query.count, req.query.page) if req.query.count? && req.query.page?
           sendResponse res, err, data
     }
     {
