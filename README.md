@@ -1,7 +1,8 @@
 # bald
 REST API generator using [Sequelize](http://www.sequelizejs.com/) models in [express.js](http://expressjs.com/).
 
-[![npm version](https://badge.fury.io/js/bald.svg)](http://badge.fury.io/js/bald)
+[![NPM](https://nodei.co/npm/bald.png?downloads=true)](https://nodei.co/npm/bald/)
+
 
 ### Installing via NPM
 ```bash
