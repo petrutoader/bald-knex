@@ -164,6 +164,24 @@ userManager = bald.resource({
 });
 ```
 
+### Endpoint data pagination, sorting and filtering
+
+You have multiple filtering, sorting and filtering options, and you may also combine them. A series of filters for the list endpoints are available:
+
+#### Pagination
+
+You can get paginated results by providing via `count` the element count to be outputed and `page` to display a paged result (e.g.`/api/Users?count=30&page=2`).
+
+#### Sorting
+
+You can sort results by providing `sort` (accepts either `asc` or `desc`) and `sortBy` which will sort by a value (e.g. `/api/Users?sortBy=name&sort=desc`)
+
+*Note:* You can provide just `sort` if you want to do just an ascending or descending ordering and will use the `id` field as a `sortBy` parameter.
+
+#### Filtering
+
+You may also filter results by providing `filter` that accepts a string `e.g. John` and `filterBy` which will be the column name in the model (e.g. `/api/Users?filterBy=name&filter=John`)
+
 ### Mentions
 
 Developed at [Phyramid](http://phyramid.com)
