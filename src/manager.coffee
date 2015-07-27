@@ -6,9 +6,20 @@ module.exports = (model, eagerLoading) ->
     model.create values
       .then (data) -> done null, data
 
-  list = makeOperation (done) ->
-    query = {}
+  list = makeOperation (options, done) ->
+    query = query || {}
     query.include = {all: true, nested: true} if eagerLoading?
+
+    if options.filter? && options.filterBy?
+      query.where = {}
+      query.where[options.filterBy] = options.filter
+
+    if options.limit? && options.offset?
+      query.limit = +options.limit
+      query.offset = +options.offset
+
+    if options.sort? && options.sortBy?
+      query.order = options.sortBy + ' ' + options.sort
 
     model.findAll query
       .then (data) -> done null, data

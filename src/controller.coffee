@@ -1,32 +1,13 @@
 {sendResponse} = require('./common')()
-_ = require('underscore')
 
 module.exports = (app, endpoint, manager, middleware) ->
-  pageResults = (data, count, page) ->
-    return _.first(_.rest(data, count * (page - 1)), count)
-
-  sortResults = (data, sortBy, sort) ->
-    sortBy == 'id' if !sortBy?
-    return _.sortBy(data, sortBy).reverse() if sort == 'desc'
-    return _.sortBy(data, sortBy)
-
-  filterResults = (data, filterBy, filter) ->
-    filter = +filter if data.length > 0 && typeof data[0][filterBy] == 'number'
-    return _.where(data, _.object([filterBy], [filter]))
-
   routes = [
     {
       name: 'list'
       method: 'get'
       url: endpoint.plural
       handler: (req, res) ->
-        manager.list (err, data) ->
-          if req.query.filterBy? && req.query.filter?
-            data = filterResults(data, req.query.filterBy, req.query.filter)
-          if req.query.sort?
-            data = sortResults(data, req.query.sortBy, req.query.sort)
-          if req.query.count? && req.query.page?
-            data = pageResults(data, req.query.count, req.query.page)
+        manager.list req.query, (err, data) ->
           sendResponse res, err, data
     }
     {

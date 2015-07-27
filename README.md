@@ -171,7 +171,7 @@ You have multiple filtering, sorting and filtering options, and you may also com
 
 #### Pagination
 
-You can get paginated results by providing via `count` the element count to be outputed and `page` to display a paged result (e.g.`/api/Users?count=30&page=2`).
+You can get paginated results by providing via `limit` the element count to be outputed and `offset` to display the results from an offset (e.g.`/api/Users?limit=30&offset=30`).
 
 #### Sorting
 
@@ -185,8 +185,6 @@ You may also filter results by providing `filter` that accepts a string `e.g. Jo
 
 ### TODO
 
-* Improve performance on filtering, pagination and sorting.
-* Add filtering, pagination and sorting to managers.
 * Add Sequelize association support.
 
 ### Mentions
