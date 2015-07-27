@@ -46,7 +46,7 @@ userManager = bald.resource({
   model: model
 });
 
-userManager.list(function(err, data) {
+userManager.list(options, function(err, data) {
   console.log(data)
 });
 ```
@@ -58,7 +58,16 @@ userManager.create(values, function(err, data) {
   console.log(data);
 });
 
-userManager.list(function(err, data) {
+query = {
+  offset: 1
+  limit: 15
+  sortBy: 'id'
+  sort: 'DESC'
+  filterBy: 'name'
+  filter: 'John'
+}
+
+userManager.list(query, function(err, data) {
   console.log(data);
 });
 
