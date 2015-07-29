@@ -1,10 +1,15 @@
 async = require 'async'
 {makeOperation} = require('./common')()
 
+handleError = (err, next) ->
+  return next(err) if err.name == 'SequelizeValidationError'
+  return throw err
+
 module.exports = (model, eagerLoading) ->
   create = makeOperation (values, done) ->
     model.create values
       .then (data) -> done null, data
+      .catch (err) -> handleError err, done
 
   list = makeOperation (options, done) ->
     query = query || {}
@@ -30,6 +35,7 @@ module.exports = (model, eagerLoading) ->
 
     model.find query
       .then (data) -> done null, data
+      .catch (err) -> handleError err, done
 
   update = makeOperation (id, values, done) ->
     query = where: id: id
@@ -39,9 +45,11 @@ module.exports = (model, eagerLoading) ->
       (done) ->
         model.update values, query
           .then (data) -> done null
+          .catch (err) -> handleError err, done
       (done) ->
         model.find query
           .then (data) -> done null, data
+          .catch (err) -> handleError err, done
     ], (err, data) ->
       done err, data
 
@@ -51,12 +59,14 @@ module.exports = (model, eagerLoading) ->
         (done) ->
           model.update value, where: id: value.id
             .then (data) -> done null
+            .catch (err) -> handleError err, done
         (done) ->
           query = where: id: value.id
           query.include = all: true, nested: true if eagerLoading?
 
           model.find query
             .then (data) -> done null, value
+            .catch (err) -> handleError err, done
       ], (err, data) ->
         done null, data
     async.map values, updateValue, done
@@ -64,6 +74,7 @@ module.exports = (model, eagerLoading) ->
   del = makeOperation (id, done) ->
     model.destroy where: id: id
       .then (data) -> done null, data
+      .catch (err) -> handleError err, done
 
   return {
     create
