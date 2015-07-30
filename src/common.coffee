@@ -1,17 +1,8 @@
-_ = require 'underscore'
 async = require 'async'
+{sendResponse} = require './apiTools'
+
 
 module.exports = ->
-  sendResponse = (res, err, data) ->
-    response = {}
-    response.data = data if data
-    statusCode = 200
-
-    response.error = err if err?
-
-    headers = {'content-type': 'application/json; charset=utf-8'}
-    res.set(headers).status(statusCode).end JSON.stringify response
-
   makeOperation = (action) ->
     operation = ->
       originalArgs = [].slice.call(arguments)
@@ -42,6 +33,7 @@ module.exports = ->
         #   called with.
         (newValueArgs, done) ->
           next = ->
+            console.log arguments
             operationDone.apply(null, [].slice.call(arguments)) if !operation.after?
             done(null, [].slice.call(arguments))
           action.apply(null, newValueArgs.concat(next))

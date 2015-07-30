@@ -2,7 +2,10 @@ async = require 'async'
 {makeOperation} = require('./common')()
 
 handleError = (err, next) ->
-  return next(err) if err.name == 'SequelizeValidationError'
+  # NOTE: We need `(err, null)` here, so that we have an argument length of 2.
+  # This is because this argument array will be used later, and so we need
+  # to know that the second argument would represent the values.
+  return next(err, null) if err.name == 'SequelizeValidationError'
   return throw err
 
 module.exports = (model, eagerLoading) ->
@@ -28,6 +31,7 @@ module.exports = (model, eagerLoading) ->
 
     model.findAll query
       .then (data) -> done null, data
+      .catch (err) -> handleError err, done
 
   read = makeOperation (whereQuery, done) ->
     query = where: whereQuery
