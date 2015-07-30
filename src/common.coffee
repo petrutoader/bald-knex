@@ -33,7 +33,6 @@ module.exports = ->
         #   called with.
         (newValueArgs, done) ->
           next = ->
-            console.log arguments
             operationDone.apply(null, [].slice.call(arguments)) if !operation.after?
             done(null, [].slice.call(arguments))
           action.apply(null, newValueArgs.concat(next))
