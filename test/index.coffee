@@ -61,8 +61,23 @@ describe 'Bald resources', ->
         type: test.Sequelize.STRING
         allowNull: false
 
+    test.models.Cloth = test.db.define 'Cloth',
+      name:
+        type: test.Sequelize.STRING
+        allowNull: false
+
+    test.models.Friend = test.db.define 'Friend',
+      name:
+        type: test.Sequelize.STRING
+        allowNull: false
+
     test.models.User.hasOne test.models.Family
+    test.models.User.hasMany test.models.Cloth
+    test.models.Friend.belongsToMany test.models.User, through: 'IncludesFriend'
+
     test.models.Family.belongsTo test.models.User
+    test.models.Cloth.belongsTo test.models.User
+    test.models.User.belongsToMany test.models.Friend, through: 'IncludesFriend'
 
   beforeEach (done) ->
     test.initializeDatabase ->
@@ -71,9 +86,15 @@ describe 'Bald resources', ->
           app: test.app,
           sequelize: test.Sequelize
         test.userResource = test.bald.resource
-          model: test.models.User,
+          model: test.models.User
+          eagerLoading: true
         test.familyResource = test.bald.resource
           model: test.models.Family
+        test.clothResource = test.bald.resource
+          model: test.models.Cloth
+        test.friendResource = test.bald.resource
+          model: test.models.Friend
+          eagerLoading: true
         done()
 
   afterEach (done) ->
@@ -92,7 +113,13 @@ describe 'Bald resources', ->
     expect(Object.keys(test.userResource).length).to.eql(6)
     done()
 
-  describe 'Managers methods', ->
+  it 'should eagerly load data if eagerLoading is active', (done) ->
+    test.familyResource.create {name: 'Adams'}, (err, data) ->
+      test.userResource.create {username: 'Morty', 'Family.set': data.id}, (err, data) ->
+        expect(data.get(null, {plain: true}).Family?).to.eql(true)
+        done()
+
+  describe 'Methods', ->
     describe 'create', ->
       it 'should return a sequelize entry when used', (done) ->
         test.userResource.create {username: 'a'}, (err, data) ->
@@ -149,7 +176,7 @@ describe 'Bald resources', ->
       it 'should be able to sort results', (done) ->
         test.userResource.create {username: 'The Pope'}, (err, data) ->
           test.userResource.create {username: 'Vargo The Barbarian'}, (err, data) ->
-            test.userResource.list {sortBy: 'id', sort: 'DESC'}, (err, data) ->
+            test.userResource.list {sortBy: 'username', sort: 'DESC'}, (err, data) ->
               expect(data[0].id).to.eql(2)
               done()
       it 'should be able to filter results', (done) ->
@@ -267,5 +294,94 @@ describe 'Bald resources', ->
           test.userResource.del 1, (err, data) ->
             expect(data).to.eql('James Bond')
             done()
+  describe 'Associations', ->
+    describe 'hasOne relations', ->
+      it 'should be able to associate two models with a hasOne relation', (done) ->
+        test.familyResource.create {name: 'Adams'}, (err, data) ->
+          test.userResource.create {username: 'Morty', 'Family.set': data.id}, (err, data) ->
+            expect(data.get(null, {plain: true}).Family?).to.eql(true)
+            done()
+      it 'should be able to associate two models with a hasOne relation in a reverse manner', (done) ->
+        test.userResource.create {username: 'Morty'}, (err, data) ->
+          test.familyResource.create {name: 'Adams', 'User.set': 1}, (err, data) ->
+            expect(data.get(null, {plain:true}).UserId).to.eql(1)
+            done()
 
+    describe 'hasMany relations', ->
+      it 'should be able to associate two models with a hasMany relation with `set`', (done) ->
+        test.clothResource.create {name: 'Pants'}, (err, data) ->
+          test.clothResource.create {name: 'Shirts'}, (err, data) ->
+            test.clothResource.create {name: 'Hats'}, (err, data) ->
+              test.userResource.create {username: 'John', 'Cloths.set': [1,2,3]}, (err, data) ->
+                expect(data.get(null, {plain: true}).Cloths.length).to.eql(3)
+                done()
+      it 'should be able to associate two models with a hasMany relation with `add`', (done) ->
+        test.clothResource.create {name: 'Pants'}, (err, data) ->
+          test.clothResource.create {name: 'Shirts'}, (err, data) ->
+            test.clothResource.create {name: 'Hats'}, (err, data) ->
+              test.userResource.create {username: 'John', 'Cloths.add': [1,2,3]}, (err, data) ->
+                expect(data.get(null, {plain: true}).Cloths.length).to.eql(3)
+                done()
+
+      it 'should be able to deassociate two models with a hasMany relation with `remove` and remove one element', (done) ->
+        test.clothResource.create {name: 'Pants'}, (err, data) ->
+          test.clothResource.create {name: 'Shirts'}, (err, data) ->
+            test.clothResource.create {name: 'Hats'}, (err, cloth) ->
+              test.userResource.create {username: 'John', 'Cloths.add': [1,2,3]}, (err, data) ->
+                test.userResource.update 1, {username: 'John', 'Cloths.remove': 3}, (err, data) ->
+                  expect(data.get(null, {plain: true}).Cloths.length).to.eql(2)
+                  done()
+
+      it 'should be able to deassociate two models with a hasMany relation with `remove` and remove multiple elements', (done) ->
+        test.clothResource.create {name: 'Pants'}, (err, data) ->
+          test.clothResource.create {name: 'Shirts'}, (err, data) ->
+            test.clothResource.create {name: 'Hats'}, (err, cloth) ->
+              test.userResource.create {username: 'John', 'Cloths.add': [1,2,3]}, (err, data) ->
+                test.userResource.update 1, {username: 'John', 'Cloths.remove': [2,3]}, (err, data) ->
+                  expect(data.get(null, {plain: true}).Cloths.length).to.eql(1)
+                  done()
+
+      it 'should be able to associate two models with a hasMany relation in a reverse manner', (done) ->
+        test.userResource.create {username: 'John'}, (err, data) ->
+          test.clothResource.create {name: 'Pants', 'User.set': 1}, (err, data) ->
+            expect(data.UserId).to.eql(1)
+            done()
+
+    describe 'belongsToMany relations', ->
+      it 'should be able to associate two models with a belongsToMany relation with `set`', (done) ->
+        test.friendResource.create {name: 'John'}, (err, data) ->
+          test.userResource.create {username: 'Alfred', 'Friends.set': 1}, (err, data) ->
+            expect(data.Friends.length).to.eql(1)
+            done()
+
+      it 'should be able to associate two models with a belongsToMany relation with `add`', (done) ->
+        test.friendResource.create {name: 'John'}, (err, data) ->
+          test.friendResource.create {name: 'John'}, (err, data) ->
+            test.userResource.create {username: 'Alfred', 'Friends.add': [1,2]}, (err, data) ->
+              expect(data.Friends.length).to.eql(2)
+              done()
+
+      it 'should be able to deassociate two models with a belongsToMany relation with `remove` and remove one element', (done) ->
+        test.friendResource.create {name: 'John'}, (err, data) ->
+          test.friendResource.create {name: 'Batman'}, (err, data) ->
+            test.userResource.create {username: 'John', 'Friends.add': [1,2]}, (err, data) ->
+              # John you suck, Batman is cooler.
+              test.userResource.update 1, {'Friends.remove': 1}, (err, data) ->
+                expect(data.get(null, {plain: true}).Friends.length).to.eql(1)
+                done()
+
+      it 'should be able to deassociate two models with a belongsToMany relation with `remove` and remove one element', (done) ->
+        test.friendResource.create {name: 'John'}, (err, data) ->
+          test.friendResource.create {name: 'Snitch'}, (err, data) ->
+            test.friendResource.create {name: 'Doe'}, (err, data) ->
+              test.userResource.create {username: 'John', 'Friends.add': [1,2,3]}, (err, data) ->
+                test.userResource.update 1, {'Friends.remove': [1,2]}, (err, data) ->
+                  expect(data.get(null, {plain: true}).Friends.length).to.eql(1)
+                  done()
+
+      it 'should be able to associate two models with a belongsToMany relation in a reverse manner', (done) ->
+        test.userResource.create {username: 'Alfred'}, (err, data) ->
+          test.friendResource.create {name: 'Carmen', 'Users.set': 1}, (err, data) ->
+            expect(data.get(null, {plain:true}).Users.length).to.eql(1)
+            done()
 

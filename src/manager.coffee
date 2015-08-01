@@ -58,14 +58,20 @@ module.exports = (model, eagerLoading) ->
     query = where: id: id
     query.include = all: true, nested: true if eagerLoading?
 
+    updateValues = _.omit values, (value) -> !/\w+.[set|add|remove]+/.test(value)
+
     async.waterfall [
       (done) ->
-        model.update(values, query)
+        model.update(updateValues, query)
           .then (data) -> done null
           .catch (err) -> handleError err, done
       (done) ->
         model.find query
-          .then (data) -> Association.attempt model, data, values, done
+          .then (data) -> Association.attempt model, data, values, () -> done()
+          .catch (err) -> handleError err, done
+      (done) ->
+        model.find query
+          .then (data) -> done null, data
           .catch (err) -> handleError err, done
     ], (err, data) ->
       done err, data

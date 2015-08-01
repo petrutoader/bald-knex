@@ -1,14 +1,10 @@
 inflect = require 'inflect'
+async = require 'async'
 
 associateModels = (targetModels, sourceData, sourceModel, next) ->
-  associationCount = 1
-
-  tracker = (cap) ->
-    return next(null, sourceData) if associationCount == cap
-    return associationCount++
-
-  targetModels.map (targetModelData) ->
-    targetModel = sourceModel.sequelize.models[targetModelData.name.singular]
+  processAssociation = (targetModelData, done) ->
+    targetModel = sourceModel.sequelize.models[targetModelData.name.singular] ||
+      sourceModel.sequelize.models[targetModelData.name.plural]
 
     associator = sourceModel.associations[targetModelData.name.plural] ||
       sourceModel.associations[targetModelData.name.singular]
@@ -21,7 +17,10 @@ associateModels = (targetModels, sourceData, sourceModel, next) ->
 
     targetModel.findAll(query).then (targetData) ->
       targetData = targetData[0] if typeof targetModelData.value != 'object'
-      sourceData[targetMethod](targetData).then -> tracker targetModels.length
+      sourceData[targetMethod](targetData).then (res) -> done(null, res)
+
+  async.map targetModels, processAssociation, (err, res) ->
+    next(null, sourceData)
 
 attempt = (sourceModel, sourceData, values, next) ->
   throw new Error 'Attempted to associate with an inexistent resource.' if !sourceData?
