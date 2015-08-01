@@ -135,6 +135,29 @@ userManager.create.after = function(err, data, next) {
 }
 ```
 
+### Associations
+
+You can associate models by using `set`, `remove`, `add` for all the available relations types in Sequelize.
+
+#### Manager
+
+```javascript
+data = {
+  name: 'Alfred'
+  'Family.set': 1
+}
+
+userManager.create(data, function(err, data) {
+  console.log(data);
+});
+```
+
+Where `Family.set` is the trigger that launches the association methods, `Family` is the name of the model and `set` is the action.
+
+#### HTTP
+
+Following the same method as in the manager, you `PUT` or `POST` the data to the endpoint with `x-www-form-urlencoded`.
+
 ### Manager and REST API
 
 Available routes are listed below:
