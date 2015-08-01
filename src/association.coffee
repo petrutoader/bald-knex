@@ -1,15 +1,21 @@
 inflect = require 'inflect'
 async = require 'async'
+util = require 'util'
 
 associateModels = (targetModels, sourceData, sourceModel, next) ->
   processAssociation = (targetModelData, done) ->
-    targetModel = sourceModel.sequelize.models[targetModelData.name.singular] ||
-      sourceModel.sequelize.models[targetModelData.name.plural]
+    models = sourceModel.sequelize.models
 
-    associator = sourceModel.associations[targetModelData.name.plural] ||
-      sourceModel.associations[targetModelData.name.singular]
-    targetMethod = associator.accessors?[targetModelData.method] ||
-      associator?[targetModelData.method]
+    association = sourceModel.associations[targetModelData.name.plural] ||
+                  sourceModel.associations[targetModelData.name.singular]
+
+    throw new Error 'Association unavailable' if !association?
+
+    targetModel = association.target || association.target
+    throw new Error 'Model unavailable' if !targetModel?
+
+    targetMethod = association.accessors?[targetModelData.method] ||
+                   association[targetModelData.method]
     throw new Error 'Method unavailable for model' if !targetMethod?
 
     query = {}
@@ -25,10 +31,11 @@ associateModels = (targetModels, sourceData, sourceModel, next) ->
 
 attempt = (sourceModel, sourceData, values, next) ->
   throw new Error 'Attempted to associate with an inexistent resource.' if !sourceData?
+
   filteredValues = Object.keys(values).filter (key) ->
     modelName = key.split('.')[0] if key.split('.').length == 2
-
     return false if !modelName?
+
     return sourceModel.associations[modelName]? ||
       sourceModel.associations[inflect.pluralize(modelName)]?
 

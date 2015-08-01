@@ -47,7 +47,7 @@ describe 'Bald initialization', ->
 
 describe 'Bald resources', ->
   before ->
-    test.models.User = test.db.define 'Users',
+    test.models.User = test.db.define 'User',
       username:
         type: test.Sequelize.STRING
         allowNull: false
@@ -71,13 +71,22 @@ describe 'Bald resources', ->
         type: test.Sequelize.STRING
         allowNull: false
 
+    test.models.Document = test.db.define 'Document', {}
+
     test.models.User.hasOne test.models.Family
     test.models.User.hasMany test.models.Cloth
     test.models.Friend.belongsToMany test.models.User, through: 'IncludesFriend'
 
+    test.models.Document.belongsTo test.models.User, as: 'DocumentIssuer', foreignKey: 'DocumentIssuerId'
+    test.models.Document.belongsTo test.models.User, as: 'DocumentRecepient', foreignKey: 'DocumentRecepientId'
+
     test.models.Family.belongsTo test.models.User
     test.models.Cloth.belongsTo test.models.User
+
     test.models.User.belongsToMany test.models.Friend, through: 'IncludesFriend'
+
+    test.models.User.hasMany test.models.Document, as: 'IssuedDocument', foreignKey: 'DocumentIssuerId'
+    test.models.User.hasMany test.models.Document, as: 'ReceivedDocument', foreignKey: 'ReceivedDocumentId'
 
   beforeEach (done) ->
     test.initializeDatabase ->
@@ -85,16 +94,27 @@ describe 'Bald resources', ->
         test.bald = new Bald
           app: test.app,
           sequelize: test.Sequelize
+
         test.userResource = test.bald.resource
           model: test.models.User
           eagerLoading: true
+
         test.familyResource = test.bald.resource
           model: test.models.Family
+          eagerLoading: true
+
         test.clothResource = test.bald.resource
           model: test.models.Cloth
+          eagerLoading: true
+
         test.friendResource = test.bald.resource
           model: test.models.Friend
           eagerLoading: true
+
+        test.documentResource = test.bald.resource
+          model: test.models.Document
+          eagerLoading: true
+
         done()
 
   afterEach (done) ->
@@ -348,40 +368,61 @@ describe 'Bald resources', ->
             done()
 
     describe 'belongsToMany relations', ->
-      it 'should be able to associate two models with a belongsToMany relation with `set`', (done) ->
-        test.friendResource.create {name: 'John'}, (err, data) ->
-          test.userResource.create {username: 'Alfred', 'Friends.set': 1}, (err, data) ->
-            expect(data.Friends.length).to.eql(1)
-            done()
-
-      it 'should be able to associate two models with a belongsToMany relation with `add`', (done) ->
-        test.friendResource.create {name: 'John'}, (err, data) ->
+      describe 'through', ->
+        it 'should be able to associate two models with a belongsToMany relation with `set`', (done) ->
           test.friendResource.create {name: 'John'}, (err, data) ->
-            test.userResource.create {username: 'Alfred', 'Friends.add': [1,2]}, (err, data) ->
-              expect(data.Friends.length).to.eql(2)
+            test.userResource.create {username: 'Alfred', 'Friends.set': 1}, (err, data) ->
+              expect(data.Friends.length).to.eql(1)
               done()
 
-      it 'should be able to deassociate two models with a belongsToMany relation with `remove` and remove one element', (done) ->
-        test.friendResource.create {name: 'John'}, (err, data) ->
-          test.friendResource.create {name: 'Batman'}, (err, data) ->
-            test.userResource.create {username: 'John', 'Friends.add': [1,2]}, (err, data) ->
-              # John you suck, Batman is cooler.
-              test.userResource.update 1, {'Friends.remove': 1}, (err, data) ->
-                expect(data.get(null, {plain: true}).Friends.length).to.eql(1)
+        it 'should be able to associate two models with a belongsToMany relation with `add`', (done) ->
+          test.friendResource.create {name: 'John'}, (err, data) ->
+            test.friendResource.create {name: 'John'}, (err, data) ->
+              test.userResource.create {username: 'Alfred', 'Friends.add': [1,2]}, (err, data) ->
+                expect(data.Friends.length).to.eql(2)
                 done()
 
-      it 'should be able to deassociate two models with a belongsToMany relation with `remove` and remove one element', (done) ->
-        test.friendResource.create {name: 'John'}, (err, data) ->
-          test.friendResource.create {name: 'Snitch'}, (err, data) ->
-            test.friendResource.create {name: 'Doe'}, (err, data) ->
-              test.userResource.create {username: 'John', 'Friends.add': [1,2,3]}, (err, data) ->
-                test.userResource.update 1, {'Friends.remove': [1,2]}, (err, data) ->
+        it 'should be able to deassociate two models with a belongsToMany relation with `remove` and remove one element', (done) ->
+          test.friendResource.create {name: 'John'}, (err, data) ->
+            test.friendResource.create {name: 'Batman'}, (err, data) ->
+              test.userResource.create {username: 'John', 'Friends.add': [1,2]}, (err, data) ->
+                # John you suck, Batman is cooler.
+                test.userResource.update 1, {'Friends.remove': 1}, (err, data) ->
                   expect(data.get(null, {plain: true}).Friends.length).to.eql(1)
                   done()
 
-      it 'should be able to associate two models with a belongsToMany relation in a reverse manner', (done) ->
-        test.userResource.create {username: 'Alfred'}, (err, data) ->
-          test.friendResource.create {name: 'Carmen', 'Users.set': 1}, (err, data) ->
-            expect(data.get(null, {plain:true}).Users.length).to.eql(1)
-            done()
+        it 'should be able to deassociate two models with a belongsToMany relation with `remove` and remove one element', (done) ->
+          test.friendResource.create {name: 'John'}, (err, data) ->
+            test.friendResource.create {name: 'Snitch'}, (err, data) ->
+              test.friendResource.create {name: 'Doe'}, (err, data) ->
+                test.userResource.create {username: 'John', 'Friends.add': [1,2,3]}, (err, data) ->
+                  test.userResource.update 1, {'Friends.remove': [1,2]}, (err, data) ->
+                    expect(data.get(null, {plain: true}).Friends.length).to.eql(1)
+                    done()
 
+        it 'should be able to associate two models with a belongsToMany relation in a reverse manner', (done) ->
+          test.userResource.create {username: 'Alfred'}, (err, data) ->
+            test.friendResource.create {name: 'Carmen', 'Users.set': 1}, (err, data) ->
+              expect(data.get(null, {plain:true}).Users.length).to.eql(1)
+              done()
+
+      describe 'as', ->
+        it 'should be able to associate two models with `as` from the owner with `set`', (done) ->
+          test.documentResource.create {}, (err, data) ->
+            test.documentResource.create {}, (err, data) ->
+              test.userResource.create {username: 'Andrew', 'IssuedDocument.set': 1, 'ReceivedDocument.set': 2}, (err, data) ->
+                expect(data.ReceivedDocument.length == 1 && data.IssuedDocument.length == 1).to.eql(true)
+                done()
+        it 'should be able to associate two models with `as` from the owner with `add`', (done) ->
+          test.documentResource.create {}, (err, data) ->
+            test.documentResource.create {}, (err, data) ->
+              test.userResource.create {username: 'Andrew', 'IssuedDocument.set': [1,2]}, (err, data) ->
+                expect(data.IssuedDocument.length == 2).to.eql(true)
+                done()
+        it 'should be able to associate two model with `as` with `set` in a reverse manner', (done) ->
+          test.userResource.create {username: 'PHYRAMID'}, (err, data) ->
+            test.userResource.create {username: 'MICROSOFT'}, (err, data) ->
+              test.documentResource.create {'DocumentIssuer.set': 1, 'DocumentRecepient.set': 2}, (err, document) ->
+                document = document.get(null, plain: true)
+                expect(document.DocumentIssuer? && document.DocumentRecepient?).to.eql(true)
+                done()
