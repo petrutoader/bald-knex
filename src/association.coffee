@@ -10,6 +10,7 @@ associateModels = (targetModels, sourceData, sourceModel, next) ->
       sourceModel.associations[targetModelData.name.singular]
     targetMethod = associator.accessors?[targetModelData.method] ||
       associator?[targetModelData.method]
+    throw new Error 'Method unavailable for model' if !targetMethod?
 
     query = {}
     query.where = {}
