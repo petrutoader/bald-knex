@@ -1,4 +1,4 @@
-{sendResponse} = require('./common')()
+{sendResponse} = require('./apiTools')
 
 module.exports = (app, endpoint, manager, middleware) ->
   routes = [

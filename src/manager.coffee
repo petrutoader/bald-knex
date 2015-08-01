@@ -1,5 +1,8 @@
 async = require 'async'
-{makeOperation} = require('./common')()
+_ = require 'underscore'
+
+{makeOperation} = require('./common')
+Association = require('./association')
 
 handleError = (err, next) ->
   # NOTE: We need `(err, null)` here, so that we have an argument length of 2.
@@ -10,9 +13,19 @@ handleError = (err, next) ->
 
 module.exports = (model, eagerLoading) ->
   create = makeOperation (values, done) ->
-    model.create values
-      .then (data) -> done null, data
-      .catch (err) -> handleError err, done
+    query = query || {}
+    query.include = {all: true, nested: true} if eagerLoading?
+
+    async.waterfall [
+      (done) ->
+        model.create(values)
+          .then (data) -> Association.attempt model, data, values, done
+          .catch (err) -> handleError err, done
+      (data, done) ->
+        query.where = data.get()
+        model.find(query).then (data) -> done(null, data)
+    ], (err, data) ->
+      done(err, data)
 
   list = makeOperation (options, done) ->
     query = query || {}
@@ -47,12 +60,12 @@ module.exports = (model, eagerLoading) ->
 
     async.waterfall [
       (done) ->
-        model.update values, query
+        model.update(values, query)
           .then (data) -> done null
           .catch (err) -> handleError err, done
       (done) ->
         model.find query
-          .then (data) -> done null, data
+          .then (data) -> Association.attempt model, data, values, done
           .catch (err) -> handleError err, done
     ], (err, data) ->
       done err, data
