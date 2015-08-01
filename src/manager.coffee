@@ -85,7 +85,7 @@ module.exports = (model, eagerLoading) ->
             .then (data) -> done null, value
             .catch (err) -> handleError err, done
       ], (err, data) ->
-        done null, data
+        done err, data
     async.map values, updateValue, done
 
   del = makeOperation (id, done) ->

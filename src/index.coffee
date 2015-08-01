@@ -1,4 +1,4 @@
-inflection = require 'inflection'
+inflect = require 'inflect'
 manager = require './manager'
 controller = require './controller'
 
@@ -13,7 +13,7 @@ class Bald
 
     endpoints = endpoints || {}
     if !endpoints.plural? && !endpoints.singular?
-      plural = inflection.pluralize model.name
+      plural = inflect.pluralize model.name
 
       endpoints = {
         plural: '/api/' + plural
