@@ -218,10 +218,6 @@ You can sort results by providing `sort` (accepts either `asc` or `desc`) and `s
 
 You may also filter results by providing `filter` that accepts a string `e.g. John` and `filterBy` which will be the column name in the model (e.g. `/api/Users?filterBy=name&filter=John`)
 
-### TODO
-
-* Add Sequelize association support.
-
 ### Mentions
 
 Developed at [Phyramid](http://phyramid.com)
