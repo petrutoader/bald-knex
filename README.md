@@ -4,6 +4,7 @@ REST API generator using [Sequelize](http://www.sequelizejs.com/) models in [exp
 [![NPM](https://nodei.co/npm/bald.png?downloads=true)](https://nodei.co/npm/bald/)
 
 [![Build Status](https://travis-ci.org/Phyramid/bald.svg?branch=master)](https://travis-ci.org/Phyramid/bald)
+[![Dependency Status](https://david-dm.org/phyramid/bald.svg)](https://david-dm.org/phyramid/bald)
 
 
 ### Installing via NPM
