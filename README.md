@@ -2,6 +2,7 @@
 REST API generator using [Sequelize](http://www.sequelizejs.com/) models in [express.js](http://expressjs.com/).
 
 [![NPM](https://nodei.co/npm/bald.png?downloads=true)](https://nodei.co/npm/bald/)
+
 [![Build Status](https://travis-ci.org/Phyramid/bald.svg?branch=master)](https://travis-ci.org/Phyramid/bald)
 
 
