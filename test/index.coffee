@@ -86,7 +86,7 @@ describe 'Bald resources', ->
     test.models.User.belongsToMany test.models.Friend, through: 'IncludesFriend'
 
     test.models.User.hasMany test.models.Document, as: 'IssuedDocument', foreignKey: 'DocumentIssuerId'
-    test.models.User.hasMany test.models.Document, as: 'ReceivedDocument', foreignKey: 'ReceivedDocumentId'
+    test.models.User.hasMany test.models.Document, as: 'ReceivedDocument', foreignKey: 'DocumentRecepientId'
 
   beforeEach (done) ->
     test.initializeDatabase ->
