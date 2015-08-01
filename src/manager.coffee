@@ -14,7 +14,7 @@ handleError = (err, next) ->
 module.exports = (model, eagerLoading) ->
   create = makeOperation (values, done) ->
     query = query || {}
-    query.include = {all: true, nested: true} if eagerLoading?
+    query.include = {all: true, nested: true} if eagerLoading
 
     async.waterfall [
       (done) ->
@@ -29,7 +29,7 @@ module.exports = (model, eagerLoading) ->
 
   list = makeOperation (options, done) ->
     query = query || {}
-    query.include = {all: true, nested: true} if eagerLoading?
+    query.include = {all: true, nested: true} if eagerLoading
 
     if options.filter? && options.filterBy?
       query.where = {}
@@ -48,7 +48,7 @@ module.exports = (model, eagerLoading) ->
 
   read = makeOperation (whereQuery, done) ->
     query = where: whereQuery
-    query.include = all: true, nested: true if eagerLoading?
+    query.include = all: true, nested: true if eagerLoading
 
     model.find query
       .then (data) -> done null, data
@@ -56,7 +56,7 @@ module.exports = (model, eagerLoading) ->
 
   update = makeOperation (id, values, done) ->
     query = where: id: id
-    query.include = all: true, nested: true if eagerLoading?
+    query.include = all: true, nested: true if eagerLoading
 
     updateValues = _.omit values, (value) -> !/\w+.[set|add|remove]+/.test(value)
 
@@ -85,7 +85,7 @@ module.exports = (model, eagerLoading) ->
             .catch (err) -> handleError err, done
         (done) ->
           query = where: id: value.id
-          query.include = all: true, nested: true if eagerLoading?
+          query.include = all: true, nested: true if eagerLoading
 
           model.find query
             .then (data) -> done null, value
