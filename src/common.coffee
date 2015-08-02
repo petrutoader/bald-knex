@@ -50,6 +50,16 @@ makeOperation = (action) ->
           done()
     ]
 
+handleError = (err, next) ->
+  # NOTE: We need `(err, null)` here, so that we have an argument length of 2.
+  # This is because this argument array will be used later, and so we need
+  # to know that the second argument would represent the values.
+
+  return next(err, null) if /^Sequelize\w+$/.test(err.name) ||
+                            /^Bald\w+/.test(err.name)
+  return throw err
+
 module.exports = {
   makeOperation
+  handleError
 }

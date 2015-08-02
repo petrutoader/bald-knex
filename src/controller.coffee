@@ -1,4 +1,5 @@
 {sendResponse} = require('./apiTools')
+{handleError} = require('./common')
 
 module.exports = (app, endpoint, manager, middleware) ->
   routes = [
@@ -38,8 +39,13 @@ module.exports = (app, endpoint, manager, middleware) ->
       name: 'updateMultiple'
       method: 'put'
       url: endpoint.plural
-      handler: (req, res) ->
-        values = JSON.parse req.body.values
+      handler: (req, res, next) ->
+        try
+          values = JSON.parse req.body.values
+        catch
+          err = new Error 'Invalid JSON data sent to updateMultiple route.'
+          return sendResponse res, err
+
         manager.updateMultiple values, (err, data) ->
           sendResponse res, err, data
     }
@@ -54,6 +60,7 @@ module.exports = (app, endpoint, manager, middleware) ->
   ]
 
   routes.map (route) ->
+    throw new Error 'Invalid middleware array provided.' if middleware? && typeof middleware != 'object'
     routeMiddleware = middleware[route.name] || [] if middleware?
     routeMiddleware = [] if !middleware?
 

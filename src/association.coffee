@@ -2,6 +2,8 @@ inflect = require 'inflect'
 async = require 'async'
 util = require 'util'
 
+BaldError = require('./error')
+
 associateModels = (targetModels, sourceData, sourceModel, next) ->
   processAssociation = (targetModelData, done) ->
     models = sourceModel.sequelize.models
@@ -9,14 +11,12 @@ associateModels = (targetModels, sourceData, sourceModel, next) ->
     association = sourceModel.associations[targetModelData.name.plural] ||
                   sourceModel.associations[targetModelData.name.singular]
 
-    throw new Error 'Association unavailable' if !association?
+    throw new BaldError 'BaldAssociationUnavailable', 'Association unavailable.' if !association?
 
     targetModel = association.target || association.target
-    throw new Error 'Model unavailable' if !targetModel?
-
     targetMethod = association.accessors?[targetModelData.method] ||
                    association[targetModelData.method]
-    throw new Error 'Method unavailable for model' if !targetMethod?
+    throw new BaldError 'BaldMethodUnavailable', 'Method unavailable for model.' if !targetMethod?
 
     query = {}
     query.where = {}
@@ -30,7 +30,7 @@ associateModels = (targetModels, sourceData, sourceModel, next) ->
     next(null, sourceData)
 
 attempt = (sourceModel, sourceData, values, next) ->
-  throw new Error 'Attempted to associate with an inexistent resource.' if !sourceData?
+  throw new BaldError 'BaldInexistentAssociation', 'Attempted to associate with an inexistent resource.' if !sourceData?
 
   filteredValues = Object.keys(values).filter (key) ->
     modelName = key.split('.')[0] if key.split('.').length == 2
@@ -42,7 +42,7 @@ attempt = (sourceModel, sourceData, values, next) ->
   targetModels = filteredValues.map (value) ->
     data = value.split('.')
     name = sourceModel.associations[data[0]]?.options.name
-    throw new Error data[0] + ' does not exist, try singularizing or pluralizing it!' if !name?
+    throw new BaldError 'BaldInexistentAssociation', data[0] + ' does not exist, try singularizing or pluralizing it!' if !name?
     try
       queryValue = JSON.parse values[value]
     catch
@@ -55,4 +55,5 @@ attempt = (sourceModel, sourceData, values, next) ->
 
 module.exports = {
   attempt
+  associateModels
 }

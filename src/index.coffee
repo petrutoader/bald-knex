@@ -10,6 +10,7 @@ class Bald
 
   resource: ({model, endpoints, middleware, eagerLoading}) ->
     throw new Error 'Invalid model.' if !model?
+    throw new Error 'Invalid endpoints.' if endpoints? && typeof endpoints != 'object'
 
     endpoints = endpoints || {}
     if !endpoints.plural? && !endpoints.singular?

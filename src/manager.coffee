@@ -1,15 +1,8 @@
 async = require 'async'
 _ = require 'underscore'
 
-{makeOperation} = require('./common')
+{makeOperation, handleError} = require('./common')
 Association = require('./association')
-
-handleError = (err, next) ->
-  # NOTE: We need `(err, null)` here, so that we have an argument length of 2.
-  # This is because this argument array will be used later, and so we need
-  # to know that the second argument would represent the values.
-  return next(err, null) if err.name == 'SequelizeValidationError'
-  return throw err
 
 module.exports = (model, eagerLoading) ->
   create = makeOperation (values, done) ->
@@ -72,7 +65,6 @@ module.exports = (model, eagerLoading) ->
       (done) ->
         model.find query
           .then (data) -> done null, data
-          .catch (err) -> handleError err, done
     ], (err, data) ->
       done err, data
 
@@ -89,7 +81,6 @@ module.exports = (model, eagerLoading) ->
 
           model.find query
             .then (data) -> done null, value
-            .catch (err) -> handleError err, done
       ], (err, data) ->
         done err, data
     async.map values, updateValue, done

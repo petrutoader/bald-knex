@@ -5,6 +5,7 @@ REST API generator using [Sequelize](http://www.sequelizejs.com/) models in [exp
 
 [![Build Status](https://travis-ci.org/Phyramid/bald.svg?branch=master)](https://travis-ci.org/Phyramid/bald)
 [![Dependency Status](https://david-dm.org/phyramid/bald.svg)](https://david-dm.org/phyramid/bald)
+[![Codecov](https://img.shields.io/codecov/c/github/Phyramid/bald.svg)]()
 
 
 ### Installing via NPM

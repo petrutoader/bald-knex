@@ -50,6 +50,7 @@ other2apiError = (err) ->
   }
 
 sendResponse = (res, err, data) ->
+  throw new Error '`sendResponse()` Arguments invalid.' if !res?
   ###
   * `res`
   * `err` [Error/Array of Errors/String/Array of Strings]
@@ -81,4 +82,8 @@ sendResponse = (res, err, data) ->
 
 module.exports = {
   sendResponse
+  other2apiError
+  jsError2apiError
+  string2phyCode
+  string2apiError
 }
