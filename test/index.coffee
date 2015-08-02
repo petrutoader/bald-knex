@@ -48,7 +48,9 @@ before ->
     logging: false
 
   test.dbError = new Sequelize 'error', '', '',
+    dialect: 'sqlite'
     host: '∂'
+    logging: false
 
 describe 'Bald initialization', ->
   it 'should throw an exception when initilized without arguments', (done) ->
