@@ -15,7 +15,8 @@ module.exports = (model, eagerLoading) ->
           .then (data) -> Association.attempt model, data, values, done
           .catch (err) -> handleError err, done
       (data, done) ->
-        query.where = data.get()
+        query.where = {}
+        query.where[model.primaryKeyField] = data[model.primaryKeyField]
         model.find(query).then (data) -> done(null, data)
     ], (err, data) ->
       done(err, data)

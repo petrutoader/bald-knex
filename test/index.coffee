@@ -456,7 +456,7 @@ describe 'Bald resources', ->
             data = JSON.parse body
             expect(data.data.username).to.eql('Alfred')
             done()
-      it 'aaa', (done) ->
+      it 'should provide an error via `err` if attempting an unavailable assocition', (done) ->
         requestData =
           url: "#{test.baseUrl}/api/Users/1"
           form:
