@@ -5,7 +5,6 @@ bodyParser = require('body-parser')
 chai = require('chai')
 request = require('request')
 expect = chai.expect
-methodOverride = require('method-override')
 
 
 Bald = require('../src')
