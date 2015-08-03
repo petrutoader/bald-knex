@@ -564,7 +564,7 @@ describe 'Bald resources', ->
           test.clothResource.create {name: 'Shirts'}, (err, data) ->
             test.clothResource.create {name: 'Hats'}, (err, cloth) ->
               test.userResource.create {username: 'John', 'Cloths.add': [1,2,3]}, (err, data) ->
-                test.userResource.update id: 1, {username: 'John', 'Cloths.remove': 3}, (err, data) ->
+                test.userResource.update id: 1, {'Cloths.remove': 3}, (err, data) ->
                   expect(data.get(null, {plain: true}).Cloths.length).to.eql(2)
                   done()
 

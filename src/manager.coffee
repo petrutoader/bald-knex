@@ -52,7 +52,8 @@ module.exports = (model, eagerLoading) ->
     query = where: query
     query.include = all: true, nested: true if eagerLoading
 
-    updateValues = _.omit values, (value) -> !/\w+.[set|add|remove]+/.test(value)
+    updateValues = _.omit values, (value, key) ->
+      return /\w+\.(set|add|remove)/.test(key)
 
     async.waterfall [
       (done) ->
