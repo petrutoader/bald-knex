@@ -80,7 +80,7 @@ userManager.read({property: query}, function(err, data) {
   console.log(data);
 });
 
-userManager.update(id, values, function(err, data) {
+userManager.update({property: query}, values, function(err, data) {
   console.log(data);
 });
 

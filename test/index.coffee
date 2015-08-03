@@ -312,7 +312,7 @@ describe 'Bald resources', ->
         done()
       it 'should return a sequelize entry when used', (done) ->
         test.familyResource.create {name: 'a'}, (err, data) ->
-          test.familyResource.update 1, {name: 'b'}, (err, data) ->
+          test.familyResource.update id: 1, {name: 'b'}, (err, data) ->
             expect(data.dataValues?).to.eql(true)
             done()
       it 'should be able to alter flow when before functions are defined', (done) ->
@@ -321,7 +321,7 @@ describe 'Bald resources', ->
           next(id, values)
 
         test.userResource.create {username: 'Bill Clinton'}, (err, data) ->
-          test.userResource.update 1, {}, (err, data) ->
+          test.userResource.update id: 1, {}, (err, data) ->
             expect(data.username).to.eql('James Bond')
             done()
       it 'should be able to alter flow when after functions are defined', (done) ->
@@ -329,16 +329,16 @@ describe 'Bald resources', ->
           data.username = 'James Bond'
           next(err, data)
         test.userResource.create {username: 'Tony Montana'}, (err, data) ->
-          test.userResource.update 1, {username: 'Tom Hanks'}, (err, data) ->
+          test.userResource.update id: 1, {username: 'Tom Hanks'}, (err, data) ->
             expect(data.username).to.eql('James Bond')
             done()
       it 'should provide an Sequelize error when failing validation', (done) ->
         test.userResource.create {username: 'Tony Montana'}, (err, data) ->
-          test.userResource.update 1, {email: 'Tom Hanks'}, (err, data) ->
+          test.userResource.update id: 1, {email: 'Tom Hanks'}, (err, data) ->
             expect(err?).to.eql(true)
             done()
       it 'should throw an error when an Sequelize error is thrown', (done) ->
-        test.userErrorResource.update 1, {}, (err, data) ->
+        test.userErrorResource.update id: 1, {}, (err, data) ->
           expect(err?).to.eql(true)
         done()
 
@@ -564,7 +564,7 @@ describe 'Bald resources', ->
           test.clothResource.create {name: 'Shirts'}, (err, data) ->
             test.clothResource.create {name: 'Hats'}, (err, cloth) ->
               test.userResource.create {username: 'John', 'Cloths.add': [1,2,3]}, (err, data) ->
-                test.userResource.update 1, {username: 'John', 'Cloths.remove': 3}, (err, data) ->
+                test.userResource.update id: 1, {username: 'John', 'Cloths.remove': 3}, (err, data) ->
                   expect(data.get(null, {plain: true}).Cloths.length).to.eql(2)
                   done()
 
@@ -573,7 +573,7 @@ describe 'Bald resources', ->
           test.clothResource.create {name: 'Shirts'}, (err, data) ->
             test.clothResource.create {name: 'Hats'}, (err, cloth) ->
               test.userResource.create {username: 'John', 'Cloths.add': [1,2,3]}, (err, data) ->
-                test.userResource.update 1, {username: 'John', 'Cloths.remove': [2,3]}, (err, data) ->
+                test.userResource.update id: 1, {username: 'John', 'Cloths.remove': [2,3]}, (err, data) ->
                   expect(data.get(null, {plain: true}).Cloths.length).to.eql(1)
                   done()
 
@@ -603,7 +603,7 @@ describe 'Bald resources', ->
             test.friendResource.create {name: 'Batman'}, (err, data) ->
               test.userResource.create {username: 'John', 'Friends.add': [1,2]}, (err, data) ->
                 # John you suck, Batman is cooler.
-                test.userResource.update 1, {'Friends.remove': 1}, (err, data) ->
+                test.userResource.update id: 1, {'Friends.remove': 1}, (err, data) ->
                   expect(data.get(null, {plain: true}).Friends.length).to.eql(1)
                   done()
 
@@ -612,7 +612,7 @@ describe 'Bald resources', ->
             test.friendResource.create {name: 'Snitch'}, (err, data) ->
               test.friendResource.create {name: 'Doe'}, (err, data) ->
                 test.userResource.create {username: 'John', 'Friends.add': [1,2,3]}, (err, data) ->
-                  test.userResource.update 1, {'Friends.remove': [1,2]}, (err, data) ->
+                  test.userResource.update id: 1, {'Friends.remove': [1,2]}, (err, data) ->
                     expect(data.get(null, {plain: true}).Friends.length).to.eql(1)
                     done()
 

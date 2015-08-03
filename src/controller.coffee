@@ -32,7 +32,7 @@ module.exports = (app, endpoint, manager, middleware) ->
       method: 'put'
       url: endpoint.singular
       handler: (req, res) ->
-        manager.update req.params.id, req.body, (err, data) ->
+        manager.update id: req.params.id, req.body, (err, data) ->
           sendResponse res, err, data
     }
     {

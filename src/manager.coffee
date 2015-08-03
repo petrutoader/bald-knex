@@ -48,8 +48,8 @@ module.exports = (model, eagerLoading) ->
       .then (data) -> done null, data
       .catch (err) -> handleError err, done
 
-  update = makeOperation (id, values, done) ->
-    query = where: id: id
+  update = makeOperation (query, values, done) ->
+    query = where: query
     query.include = all: true, nested: true if eagerLoading
 
     updateValues = _.omit values, (value) -> !/\w+.[set|add|remove]+/.test(value)
