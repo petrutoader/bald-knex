@@ -4,10 +4,10 @@ _ = require 'underscore'
 {makeOperation, handleError} = require('./common')
 Association = require('./association')
 
-module.exports = (model, eagerLoading) ->
+module.exports = (model, include) ->
   create = makeOperation (values, done) ->
     query = query || {}
-    query.include = {all: true, nested: true} if eagerLoading
+    query.include = include if include?
 
     async.waterfall [
       (done) ->
@@ -23,7 +23,7 @@ module.exports = (model, eagerLoading) ->
 
   list = makeOperation (options, done) ->
     query = query || {}
-    query.include = {all: true, nested: true} if eagerLoading
+    query.include = include if include?
 
     if options.filter? && options.filterBy?
       query.where = {}
@@ -42,7 +42,7 @@ module.exports = (model, eagerLoading) ->
 
   read = makeOperation (whereQuery, done) ->
     query = where: whereQuery
-    query.include = all: true, nested: true if eagerLoading
+    query.include = include if include?
 
     model.find query
       .then (data) -> done null, data
@@ -50,7 +50,7 @@ module.exports = (model, eagerLoading) ->
 
   update = makeOperation (query, values, done) ->
     query = where: query
-    query.include = all: true, nested: true if eagerLoading
+    query.include = include if include?
 
     updateValues = _.omit values, (value, key) ->
       return /\w+\.(set|add|remove)/.test(key)
@@ -79,7 +79,7 @@ module.exports = (model, eagerLoading) ->
             .catch (err) -> handleError err, done
         (done) ->
           query = where: id: value.id
-          query.include = all: true, nested: true if eagerLoading
+          query.include = include if include?
 
           model.find query
             .then (data) -> done null, value

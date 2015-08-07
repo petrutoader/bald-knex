@@ -182,7 +182,7 @@ userManager = bald.resource({
   model: userModel,
   endpoints: {
     plural: '/api/CoolUsers'
-    singular: '/api/CoolUsers/:id'
+    singular: '/api/CoolUser/:id'
   }
 });
 ```
@@ -197,9 +197,11 @@ You may also tell Bald to eagerly load all the data when initializing the resour
 ```javascript
 userManager = bald.resource({
   model: userModel,
-  eagerLoading: true
+  include: {all: true, nested: true}
 });
 ```
+
+Please refer to Sequelize's documentation for more details on the `include` parameter.
 
 ### Endpoint data pagination, sorting and filtering
 

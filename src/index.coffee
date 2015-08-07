@@ -8,20 +8,18 @@ class Bald
     @app = app
     @sequelize = sequelize
 
-  resource: ({model, endpoints, middleware, eagerLoading}) ->
+  resource: ({model, endpoints, middleware, include}) ->
     throw new Error 'Invalid model.' if !model?
     throw new Error 'Invalid endpoints.' if endpoints? && typeof endpoints != 'object'
 
     endpoints = endpoints || {}
     if !endpoints.plural? && !endpoints.singular?
-      plural = inflect.pluralize model.name
 
-      endpoints = {
-        plural: '/api/' + plural
-        singular: '/api/' + plural + '/:id'
-      }
+      endpoints =
+        plural: '/api/' + inflect.pluralize model.name
+        singular: '/api/' + inflect.singularize model.name + '/:id'
 
-    modelManager = manager model, eagerLoading
+    modelManager = manager model, include
     controller @app, endpoints, modelManager, middleware
 
     return modelManager

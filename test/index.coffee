@@ -118,7 +118,7 @@ describe 'Bald resources', ->
 
         test.userResource = test.bald.resource
           model: test.models.User
-          eagerLoading: true
+          include: {all: true, nested: true}
 
         test.userErrorResource = test.bald.resource model: test.models.UserError
 
@@ -127,15 +127,15 @@ describe 'Bald resources', ->
 
         test.clothResource = test.bald.resource
           model: test.models.Cloth
-          eagerLoading: true
+          include: {all: true, nested: true}
 
         test.friendResource = test.bald.resource
           model: test.models.Friend
-          eagerLoading: true
+          include: {all: true, nested: true}
 
         test.documentResource = test.bald.resource
           model: test.models.Document
-          eagerLoading: true
+          include: {all: true, nested: true}
 
         done()
 
@@ -426,7 +426,7 @@ describe 'Bald resources', ->
     describe 'read', ->
       it 'should read data when called', (done) ->
         requestData =
-          url: "#{test.baseUrl}/api/Users/1"
+          url: "#{test.baseUrl}/api/User/1"
           method: "GET"
         test.userResource.create {username: 'Alfred'}, (err, data) ->
           request requestData, (res, err, body) ->
@@ -447,7 +447,7 @@ describe 'Bald resources', ->
     describe 'update', ->
       it 'should update data when called', (done) ->
         requestData =
-          url: "#{test.baseUrl}/api/Users/1"
+          url: "#{test.baseUrl}/api/User/1"
           form:
             username: 'Alfred'
           method: "PUT"
@@ -458,7 +458,7 @@ describe 'Bald resources', ->
             done()
       it 'should provide an error via `err` if attempting an unavailable assocition', (done) ->
         requestData =
-          url: "#{test.baseUrl}/api/Users/1"
+          url: "#{test.baseUrl}/api/User/1"
           form:
             username: 'Alfred'
             'Family.add': 1
@@ -502,7 +502,7 @@ describe 'Bald resources', ->
     describe 'delete', ->
       it 'should delete data when called', (done) ->
         requestData =
-          url: "#{test.baseUrl}/api/Users/1"
+          url: "#{test.baseUrl}/api/User/1"
           method: "DELETE"
         test.userResource.create {username: 'Lupin'}, (err, data) ->
           request requestData, (res, err, body) ->
