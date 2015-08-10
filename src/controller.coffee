@@ -1,5 +1,7 @@
-{sendResponse} = require('./apiTools')
-{handleError} = require('./common')
+{sendResponse} = require './apiTools'
+{handleError} = require './common'
+
+BaldError = require './error'
 
 module.exports = (app, endpoint, manager, middleware) ->
   routes = [
@@ -60,7 +62,7 @@ module.exports = (app, endpoint, manager, middleware) ->
   ]
 
   routes.map (route) ->
-    throw new Error 'Invalid middleware array provided.' if middleware? && typeof middleware != 'object'
+    throw new BaldError 'BaldControllerError', 'Invalid middleware array provided.' if middleware? && typeof middleware != 'object'
     routeMiddleware = middleware[route.name] || [] if middleware?
     routeMiddleware = [] if !middleware?
 

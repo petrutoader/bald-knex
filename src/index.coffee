@@ -1,16 +1,16 @@
 inflect = require 'inflect'
 manager = require './manager'
 controller = require './controller'
+BaldError = require './error'
 
 class Bald
-  constructor: ({app, sequelize}) ->
-    throw new Error 'Arguments invalid.' if !app? || !sequelize?
+  constructor: ({app}) ->
+    throw new BaldError 'BaldInitializationError', 'Arguments invalid.' if !app?
     @app = app
-    @sequelize = sequelize
 
   resource: ({model, endpoints, middleware, include}) ->
-    throw new Error 'Invalid model.' if !model?
-    throw new Error 'Invalid endpoints.' if endpoints? && typeof endpoints != 'object'
+    throw new BaldError 'BaldResourceError', 'Invalid model.' if !model?
+    throw new BaldError 'BaldResourceError', 'Invalid endpoints.' if endpoints? && typeof endpoints != 'object'
 
     endpoints = endpoints || {}
     if !endpoints.plural? && !endpoints.singular?

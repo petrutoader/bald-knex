@@ -124,6 +124,7 @@ describe 'Bald resources', ->
 
         test.familyResource = test.bald.resource
           model: test.models.Family
+          include: {all: true, nested: true}
 
         test.clothResource = test.bald.resource
           model: test.models.Cloth
@@ -158,7 +159,6 @@ describe 'Bald resources', ->
     data =
       model: test.models.User
       endpoints: {singular: 'blah', plural: 'blahs'}
-      
     expect(test.bald.resource.bind(test.bald, data)().list?).to.eql(true)
     done()
 
@@ -191,6 +191,21 @@ describe 'Bald resources', ->
     test.familyResource.create {name: 'Adams'}, (err, data) ->
       test.userResource.create {username: 'Morty', 'Family.set': data.id}, (err, data) ->
         expect(data.get(null, {plain: true}).Family?).to.eql(true)
+        done()
+
+  it 'shouldn\'t eagerly load data if eagerLoading is disabled', (done) ->
+    familyResource = test.bald.resource model: test.models.Family
+    userResource = test.bald.resource model: test.models.User
+
+    familyResource.create {name: 'Adams'}, (err, data) ->
+      userResource.create {username: 'Morty', 'Family.set': data.id}, (err, data) ->
+        expect(data.get(null, {plain: true}).Family?).to.eql(false)
+        done()
+
+  it 'should automatically insert where property in query parameter if defined', (done) ->
+    test.familyResource.create {name: 'Adams'}, (err, data) ->
+      test.familyResource.update {where: {id: data.id}, include: {all: true}}, {name: 'Adina'}, (err, data) ->
+        expect(data.get(null, {plain: true}).Family?).to.eql(false)
         done()
 
   describe 'Methods', ->
@@ -282,7 +297,7 @@ describe 'Bald resources', ->
         done()
       it 'should return a sequelize entry when used', (done) ->
         test.userResource.create {username: 'a'}, (err, data) ->
-          test.userResource.read {id: 1}, (err, data) ->
+          test.userResource.read {where: {id: 1}}, (err, data) ->
             expect(data.dataValues?).to.eql(true)
             done()
       it 'should be able to alter flow when before functions are defined', (done) ->
@@ -349,7 +364,7 @@ describe 'Bald resources', ->
       it 'should return a sequelize entry when used', (done) ->
         test.familyResource.create {name: 'a'}, (err, data) ->
           test.familyResource.create {name: 'b'}, (err, data) ->
-            test.familyResource.updateMultiple [{id: 1, name: 'c'},{id:2, name: 'd'}], (err, data) ->
+            test.familyResource.updateMultiple [{id: 1, name: 'c'}, {id: 2, name: 'd'}], (err, data) ->
               expect(data[0].name == 'c' && data[1].name == 'd').to.eql(true)
               done()
       it 'should be able to alter flow when before functions are defined', (done) ->
@@ -359,7 +374,7 @@ describe 'Bald resources', ->
 
         test.userResource.create {username: 'Bill Clinton'}, (err, data) ->
           test.userResource.create {username: 'Justin Bieber'}, (err, data) ->
-            test.userResource.updateMultiple [{id: 10, username: 'Jim'},{id: 2, username: 'Juicy J'}],(err, data) ->
+            test.userResource.updateMultiple [{id: 10, username: 'Jim'}, {id: 2, username: 'Juicy J'}], (err, data) ->
               expect(data[0].username).to.eql('Jim')
               done()
       it 'should be able to alter flow when after functions are defined', (done) ->
@@ -381,6 +396,13 @@ describe 'Bald resources', ->
         test.userErrorResource.updateMultiple [{id:1}], (err, data) ->
           expect(err?).to.eql(true)
         done()
+
+      it 'should throw an error when an invalid association is attempted', (done) ->
+        test.userResource.create {username: 'Tony Montana'}, (err, data) ->
+          test.familyResource.create {name: 'Pepe'}, (err, data) ->
+            test.userResource.updateMultiple [{id: 1, username: 'Tom Hanks', 'Family.add': 1}], (err, data) ->
+              expect(err?).to.eql(true)
+              done()
 
     describe 'delete', ->
       it 'should exist', (done) ->
@@ -487,13 +509,14 @@ describe 'Bald resources', ->
       it 'should throw an error when provided invalid json', (done) ->
         userManager = test.bald.resource
           model: test.models.User
-          eagerLoading: true
+          include: {all: true, nested: true}
 
         requestData =
           url: "#{test.baseUrl}/api/Users"
           form:
             values: 'o'
           method: "PUT"
+
         userManager.create {username: 'Dior'}, (err, data) ->
           request requestData, (err, res, body) ->
             expect(res.statusCode).to.eql(400)

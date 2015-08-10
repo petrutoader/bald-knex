@@ -1,4 +1,5 @@
-_ = require('underscore')
+_ = require 'underscore'
+BaldError = require './error'
 
 ###
 API error format:
@@ -50,7 +51,7 @@ other2apiError = (err) ->
   }
 
 sendResponse = (res, err, data) ->
-  throw new Error '`sendResponse()` Arguments invalid.' if !res?
+  throw new BaldError 'BaldInternalError', '`sendResponse()` Arguments invalid.' if !res?
   ###
   * `res`
   * `err` [Error/Array of Errors/String/Array of Strings]

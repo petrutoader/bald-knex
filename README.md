@@ -30,7 +30,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 server = http.createServer(app);
 
-bald = new Bald({app, sequelize});
+bald = new Bald({app: app});
 
 userManager = bald.resource({
   model: userModel

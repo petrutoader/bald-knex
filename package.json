@@ -1,7 +1,7 @@
 {
   "name": "bald",
   "description": "REST API using [Sequelize](http://www.sequelizejs.com/) models in [express.js](http://expressjs.com/).",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "author": "Petru-Sebastian Toader <mail@petrutoader.com>",
   "contributors": [
     "Vlad-Ștefan Harbuz <vlad@vladh.net>"
