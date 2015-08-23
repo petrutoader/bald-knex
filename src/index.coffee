@@ -20,6 +20,8 @@ class Bald
         singular: '/api/' + inflect.singularize model.name + '/:id'
 
     modelManager = manager model, include
+    modelManager.model = model
+
     controller @app, endpoints, modelManager, middleware
 
     return modelManager
