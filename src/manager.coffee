@@ -7,7 +7,7 @@ Association = require './association'
 module.exports = (model, include) ->
   create = makeOperation (values, done) ->
     query = query || {}
-    query.include = include if include?
+    query.include = include if include? && !query.include?
 
     async.waterfall [
       (done) ->
@@ -23,7 +23,7 @@ module.exports = (model, include) ->
 
   list = makeOperation (options, done) ->
     query = query || {}
-    query.include = include if include?
+    query.include = include if include? && !query.include?
 
     if options.filter? && options.filterBy?
       query.where = {}
@@ -42,7 +42,7 @@ module.exports = (model, include) ->
 
   read = makeOperation (query, done) ->
     query = {where: query} if !query.where?
-    query.include = include if include?
+    query.include = include if include? && !query.include?
 
     model.find query
       .then (data) -> done null, data
@@ -50,7 +50,7 @@ module.exports = (model, include) ->
 
   update = makeOperation (query, values, done) ->
     query = {where: query} if !query.where?
-    query.include = include if include?
+    query.include = include if include? && !query.include?
 
     updateValues = _.omit values, (value, key) ->
       return /\w+\.(set|add|remove)/.test(key)
@@ -86,7 +86,7 @@ module.exports = (model, include) ->
             .catch (err) -> handleError err, done
         (done) ->
           query = where: id: value.id
-          query.include = include if include?
+          query.include = include if include? && !query.include?
 
           model.find query
             .then (data) -> done null, data

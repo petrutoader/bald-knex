@@ -184,7 +184,7 @@ describe 'Bald resources', ->
     done()
 
   it 'should generate a manager with list, create, update, updateMultiple, delete and read', (done) ->
-    expect(Object.keys(test.userResource).length).to.eql(6)
+    expect(Object.keys(test.userResource).length).to.eql(7)
     done()
 
   it 'should eagerly load data if eagerLoading is active', (done) ->
