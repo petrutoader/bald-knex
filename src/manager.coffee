@@ -22,8 +22,8 @@ module.exports = (model, include) ->
       done(err, data)
 
   list = makeOperation (options, done) ->
-    query = query || {}
-    query.include = include if include? && !query.include?
+    query = options || {}
+    query.include = include if include? && !options.include?
 
     if options.filter? && options.filterBy?
       query.where = {}
