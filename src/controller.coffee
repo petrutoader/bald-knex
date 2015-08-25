@@ -10,7 +10,12 @@ module.exports = (app, endpoint, manager, middleware) ->
       method: 'get'
       url: endpoint.plural
       handler: (req, res) ->
-        manager.list req.query, (err, data) ->
+        query = {}
+        query.where = req.query
+        query.include = JSON.parse req.query.include if req.query.include?
+        delete query.where.include
+
+        manager.list query, (err, data) ->
           sendResponse res, err, data
     }
     {
@@ -18,7 +23,11 @@ module.exports = (app, endpoint, manager, middleware) ->
       method: 'get'
       url: endpoint.singular
       handler: (req, res) ->
-        manager.read id: req.params.id, (err, data) ->
+        query = {}
+        query.where = id: req.params.id
+        query.include = JSON.parse req.query.include if req.query.include?
+
+        manager.read query, (err, data) ->
           sendResponse res, err, data
     }
     {
