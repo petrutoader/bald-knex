@@ -57,6 +57,7 @@ module.exports = (model, include) ->
 
     async.waterfall [
       (done) ->
+        return done() if _.isEmpty(updateValues)
         model.update(updateValues, query)
           .then (data) -> done null
           .catch (err) -> handleError err, done
