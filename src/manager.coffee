@@ -4,11 +4,25 @@ _ = require 'underscore'
 {makeOperation, handleError} = require './common'
 Association = require './association'
 
+convertType = (value) ->
+  return undefined if value == 'undefined'
+  return null if value == 'null'
+  return true if value == 'true'
+  return false if value == 'false'
+
+  v = Number(value)
+  if isNaN(v) then value else v
+
+parseValues = (values) ->
+	Object.keys(values).map (valueKey) ->
+		values[valueKey] = convertType values[valueKey]
+	return values
+
 module.exports = (model, include) ->
   create = makeOperation (values, done) ->
     query = query || {}
     query.include = include if include? && !query.include?
-
+    values = parseValues(values)
     async.waterfall [
       (done) ->
         model.create(values)
@@ -52,7 +66,7 @@ module.exports = (model, include) ->
     query = {where: query} if !query.where?
     query.include = include if include? && !query.include?
 
-    updateValues = _.omit values, (value, key) ->
+    updateValues = parseValues _.omit values, (value, key) ->
       return /\w+\.(set|add|remove)/.test(key)
 
     async.waterfall [
@@ -73,7 +87,7 @@ module.exports = (model, include) ->
 
   updateMultiple = makeOperation (values, done) ->
     updateValue = (value, done) ->
-      parsedValues = _.omit value, (val, key) ->
+      parsedValues = parseValues _.omit value, (val, key) ->
         return /\w+\.(set|add|remove)/.test(key)
 
       async.waterfall [

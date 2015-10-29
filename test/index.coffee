@@ -81,6 +81,8 @@ describe 'Bald resources', ->
       name:
         type: test.Sequelize.STRING
         allowNull: false
+      isObama:
+        type: test.Sequelize.STRING
 
     test.models.Cloth = test.db.define 'Cloth',
       name:
@@ -207,6 +209,11 @@ describe 'Bald resources', ->
       test.familyResource.update {where: {id: data.id}, include: {all: true}}, {name: 'Adina'}, (err, data) ->
         expect(data.get(null, {plain: true}).Family?).to.eql(false)
         done()
+
+  it 'should transform undefined/null strings to real types', (done) ->
+    test.familyResource.create {name: 'Washington', isObama: 'null'}, (err, data) ->
+      expect(data.isObama).to.eql(null)
+      done()
 
   describe 'Methods', ->
     describe 'create', ->
