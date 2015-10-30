@@ -10,6 +10,9 @@ convertType = (value) ->
   return true if value == 'true'
   return false if value == 'false'
 
+  v = Number(value)
+  if isNaN(v) then value else v
+
 parseValues = (values) ->
 	Object.keys(values).map (valueKey) ->
 		values[valueKey] = convertType values[valueKey]
