@@ -9,9 +9,7 @@ convertType = (value) ->
   return null if value == 'null'
   return true if value == 'true'
   return false if value == 'false'
-
-  v = Number(value)
-  if isNaN(v) then value else v
+  return value
 
 parseValues = (values) ->
 	Object.keys(values).map (valueKey) ->
