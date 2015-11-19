@@ -173,6 +173,15 @@ userManager.update({id: 1}, ... | PUT | /api/Users/1 | Edits a user
 userManager.create | POST | /api/Users | Adds a user
 userManager.del | DELETE | /api/Users/1 | Deletes a user
 
+You can disable the REST API when initializing the resource in the following way:
+
+```javascript
+userManager = bald.resource({
+  model: userModel,
+  hasApi: false
+})
+```
+
 ### Custom endpoints
 
 You can declare your own endpoints instead of letting bald pluralize the model's name. In order to do so you'll have to declare the bald resource in the following way:

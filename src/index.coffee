@@ -8,9 +8,9 @@ class Bald
     throw new BaldError 'BaldInitializationError', 'Arguments invalid.' if !app?
     @app = app
 
-  resource: ({model, endpoints, middleware, include}) ->
+  resource: ({model, endpoints, middleware, include, hasApi}) ->
+    hasApi = true if !hasApi?
     throw new BaldError 'BaldResourceError', 'Invalid model.' if !model?
-    throw new BaldError 'BaldResourceError', 'Invalid endpoints.' if endpoints? && typeof endpoints != 'object'
 
     endpoints = endpoints || {}
     if !endpoints.plural? && !endpoints.singular?
@@ -22,7 +22,7 @@ class Bald
     modelManager = manager model, include
     modelManager.model = model
 
-    controller @app, endpoints, modelManager, middleware
+    controller @app, endpoints, modelManager, middleware if hasApi
 
     return modelManager
 
