@@ -65,7 +65,7 @@ module.exports = (app, endpoint, manager, middleware) ->
       method: 'delete'
       url: endpoint.singular
       handler: (req, res) ->
-        manager.del req.params.id, (err, data) ->
+        manager.del where: id: req.params.id, (err, data) ->
           sendResponse res, err, data
     }
   ]

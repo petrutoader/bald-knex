@@ -54,7 +54,7 @@ before ->
 
 describe 'Bald initialization', ->
   it 'should throw an exception when initilized without arguments', (done) ->
-    expect(Bald.bind(Bald, {})).to.throw('Arguments invalid.')
+    expect((-> new Bald {})).to.throw('Arguments invalid.')
     done()
 
 describe 'Bald resources', ->
@@ -148,13 +148,6 @@ describe 'Bald resources', ->
 
   it 'should throw an exception when a resource is initialized without a model', (done) ->
     expect(test.bald.resource.bind(test.bald, {})).to.throw('Invalid model.')
-    done()
-
-  it 'should throw an error when declaring invalid endpoints', (done) ->
-    data =
-      model: test.models.User
-      endpoints: ''
-    expect(test.bald.resource.bind(test.bald, data)).to.throw('Invalid endpoints.')
     done()
 
   it 'should declare accept custom endpoints', (done) ->

@@ -107,8 +107,9 @@ module.exports = (model, include) ->
         done err, data
     async.map values, updateValue, done
 
-  del = makeOperation (id, done) ->
-    model.destroy where: id: id
+  del = makeOperation (query, done) ->
+    query = where: query if !query.where?
+    model.destroy query
       .then (data) -> done null, data
       .catch (err) -> handleError err, done
 
