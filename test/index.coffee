@@ -734,7 +734,3 @@ describe 'Bald resources', ->
         err = 'an error'
         expect(ApiTools.other2apiError.bind(ApiTools, err)().message?).to.eql(true)
         done()
-    describe 'handleError()', ->
-      it 'should throw an error when catching an error', (done) ->
-        expect(Common.handleError.bind(Common, new Error 'oops', ->)).to.throw('oops')
-        done()
