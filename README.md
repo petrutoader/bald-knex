@@ -1,98 +1,20 @@
 # bald
-REST API generator using [Sequelize](http://www.sequelizejs.com/) models in [express.js](http://expressjs.com/).
+REST API generator using [BookshelfJS](http://www.bookshelfjs.org/) models in [express.js](http://expressjs.com/).
 
-[![NPM](https://nodei.co/npm/bald.png?downloads=true)](https://nodei.co/npm/bald/)
+[![NPM](https://nodei.co/npm/bald-knex.png?downloads=true)](https://nodei.co/npm/bald/)
 
-[![Build Status](https://travis-ci.org/Phyramid/bald.svg?branch=master)](https://travis-ci.org/Phyramid/bald)
 [![Dependency Status](https://david-dm.org/phyramid/bald.svg)](https://david-dm.org/phyramid/bald)
-[![Codecov](https://img.shields.io/codecov/c/github/Phyramid/bald.svg)](https://codecov.io/github/Phyramid/bald)
 
 
 ### Installing via NPM
 ```bash
-npm install bald
+npm install bald-knex
 ```
 
 ### Getting started
 ```javascript
-Sequelize = require('sequelize');
-Bald = require('bald');
-express = require('express');
-bodyParser = require('body-parser');
-http = require('http');
-
-sequelize = new Sequelize('database', 'sqlUser', 'sqlPassword', {host: 'sqlHost'});
-userModel = sequelize.define('User', {name: {type: Sequelize.STRING}});
-
-app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-
-server = http.createServer(app);
-
-bald = new Bald({app: app});
-
-userManager = bald.resource({
+bald.resource({
   model: userModel
-});
-
-sequelize.sync({}).then(function() {
-  app.listen(3000);
-});
-```
-
-### Managers
-
-You can programmatically call the models once you have defined a bald resource:
-
-```javascript
-userManager = bald.resource({
-  model: model
-});
-
-userManager.list(options, function(err, data) {
-  console.log(data)
-});
-```
-
-This will output the entire list of entries in the model. Available methods are listed below:
-
-```javascript
-userManager.create(values, function(err, data) {
-  console.log(data);
-});
-
-query = {
-  offset: 1
-  limit: 15
-  sortBy: 'id'
-  sort: 'DESC'
-  filterBy: 'name'
-  filter: 'John'
-}
-
-userManager.list(query, function(err, data) {
-  console.log(data);
-});
-
-// e.g. {id: 1}
-userManager.read({property: query}, function(err, data) {
-  console.log(data);
-});
-
-userManager.update({property: query}, values, function(err, data) {
-  console.log(data);
-});
-
-// updateMultiple gets an JSON encoded array containing the objects
-// of the entries to be edited, only mandatory field is "id"
-//  e.g. [{"id":"2","name":"a"},{"id":"3","name":"b"}]
-userManager.updateMultiple(values, function(err, data) {
-  console.log(data);
-});
-
-userManager.del(id, function(err, data) {
-  console.log(data);
 });
 ```
 
@@ -106,7 +28,7 @@ isUser = function(req, res, next) {
   next();
 };
 
-userManager = bald.resource({
+bald.resource({
   model: model
   middleware: {
     'list': [isAdmin, isUser],
@@ -119,42 +41,6 @@ userManager = bald.resource({
 ```
 
 You do not need to declare all the routes middleware if none is needed.
-
-### Customize behavior
-
-You can set behavior for each method in the manager to add functionality before and after the execution of the query:
-
-```javascript
-userManager.create.before = function(values, next) {
-  console.log('You can manipulate values here, before creating.');
-  next(values);
-}
-
-userManager.create.after = function(err, data, next) {
-  // `data` will be the resulting Sequelize object
-  console.log('This will be executed after creating a user.');
-  next(err, data)
-}
-```
-
-### Associations
-
-You can associate models by using `set`, `remove`, `add` for all the available relations types in Sequelize.
-
-#### Manager
-
-```javascript
-data = {
-  name: 'Alfred'
-  'Family.set': 1
-}
-
-userManager.create(data, function(err, data) {
-  console.log(data);
-});
-```
-
-Where `Family.set` is the trigger that launches the association methods, `Family` is the name of the model and `set` is the action.
 
 #### HTTP
 
@@ -173,15 +59,6 @@ userManager.update({id: 1}, ... | PUT | /api/Users/1 | Edits a user
 userManager.create | POST | /api/Users | Adds a user
 userManager.del | DELETE | /api/Users/1 | Deletes a user
 
-You can disable the REST API when initializing the resource in the following way:
-
-```javascript
-userManager = bald.resource({
-  model: userModel,
-  hasApi: false
-})
-```
-
 ### Custom endpoints
 
 You can declare your own endpoints instead of letting bald pluralize the model's name. In order to do so you'll have to declare the bald resource in the following way:
@@ -197,38 +74,6 @@ userManager = bald.resource({
 ```
 
 Please note that the singular must include the `id` query parameter in the string. If you are specifiyign custom endpoints, both singular and plural endpoints are mandatory.
-
-
-### Eager Loading
-
-You may also tell Bald to eagerly load all the data when initializing the resource:
-
-```javascript
-userManager = bald.resource({
-  model: userModel,
-  include: {all: true, nested: true}
-});
-```
-
-Please refer to Sequelize's documentation for more details on the `include` parameter.
-
-### Endpoint data pagination, sorting and filtering
-
-You have multiple filtering, sorting and filtering options, and you may also combine them. A series of filters for the list endpoints are available:
-
-#### Pagination
-
-You can get paginated results by providing via `limit` the element count to be outputed and `offset` to display the results from an offset (e.g.`/api/Users?limit=30&offset=30`).
-
-#### Sorting
-
-You can sort results by providing `sort` (accepts either `asc` or `desc`) and `sortBy` which will sort by a value (e.g. `/api/Users?sortBy=name&sort=desc`)
-
-*Note:* You can provide just `sort` if you want to do just an ascending or descending ordering and will use the `id` field as a `sortBy` parameter.
-
-#### Filtering
-
-You may also filter results by providing `filter` that accepts a string `e.g. John` and `filterBy` which will be the column name in the model (e.g. `/api/Users?filterBy=name&filter=John`)
 
 ### Mentions
 
