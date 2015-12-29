@@ -1,7 +1,7 @@
 {
   "name": "bald-knex",
   "description": "REST API using [knex](http://www.knexjs.org/) models in [express.js](http://expressjs.com/).",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "Petru-Sebastian Toader <mail@petrutoader.com>",
   "contributors": [
     "Vlad-Ștefan Harbuz <vlad@vladh.net>"
