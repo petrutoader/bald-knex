@@ -1,29 +1,27 @@
 inflect = require 'inflect'
-manager = require './manager'
+_ = require 'lodash'
 controller = require './controller'
 BaldError = require './error'
 
 class Bald
-  constructor: ({app}) ->
+  constructor: ({app, bookshelf}) ->
     throw new BaldError 'BaldInitializationError', 'Arguments invalid.' if !app?
     @app = app
+    @bookshelf = bookshelf
 
-  resource: ({model, endpoints, middleware, include, hasApi}) ->
-    hasApi = true if !hasApi?
+  resource: ({model, endpoints, middleware}) ->
     throw new BaldError 'BaldResourceError', 'Invalid model.' if !model?
 
     endpoints = endpoints || {}
+
+
     if !endpoints.plural? && !endpoints.singular?
+      name = model.prototype.tableName
 
       endpoints =
-        plural: '/api/' + inflect.pluralize model.name
-        singular: '/api/' + inflect.singularize model.name + '/:id'
+        plural: '/api/' + inflect.pluralize name
+        singular: '/api/' + inflect.singularize name + '/:id'
 
-    modelManager = manager model, include
-    modelManager.model = model
-
-    controller @app, endpoints, modelManager, middleware if hasApi
-
-    return modelManager
+    controller @app, endpoints, model, middleware
 
 module.exports = Bald

@@ -1,7 +1,7 @@
 {
-  "name": "bald",
-  "description": "REST API using [Sequelize](http://www.sequelizejs.com/) models in [express.js](http://expressjs.com/).",
-  "version": "2.2.16",
+  "name": "bald-knex",
+  "description": "REST API using [knex](http://www.knexjs.org/) models in [express.js](http://expressjs.com/).",
+  "version": "1.0.0",
   "author": "Petru-Sebastian Toader <mail@petrutoader.com>",
   "contributors": [
     "Vlad-Ștefan Harbuz <vlad@vladh.net>"
@@ -15,11 +15,11 @@
     "url": "https://github.com/phyramid/bald/issues"
   },
   "keywords": [
-    "sequelize",
-    "sequelizejs",
+    "knex",
+    "knexjs",
     "rest",
     "restful",
-    "bald",
+    "bald-knex",
     "json",
     "api"
   ],
@@ -37,12 +37,11 @@
     "express": "^4.13.2",
     "http": "0.0.0",
     "istanbul": "^0.3.17",
+    "knex": "^0.9.0",
     "mocha": "^2.2.5",
-    "request": "^2.60.0",
-    "sequelize": "^3.5.1",
-    "sqlite3": "^3.0.9"
+    "request": "^2.60.0"
   },
-  "homepage": "https://github.com/phyramid/bald",
+  "homepage": "https://github.com/petrutoader/bald-knex",
   "scripts": {
     "prepublish": "coffee -o lib/ -c src/",
     "test": "mocha test"

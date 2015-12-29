@@ -3,70 +3,64 @@
 
 BaldError = require './error'
 
-module.exports = (app, endpoint, manager, middleware) ->
+module.exports = (app, endpoint, model, middleware) ->
   routes = [
     {
       name: 'list'
       method: 'get'
       url: endpoint.plural
       handler: (req, res) ->
-        query = {}
-        query.where = req.query
-        query.include = JSON.parse req.query.include if req.query.include?
-        delete query.where.include
-
-        manager.list query, (err, data) ->
-          sendResponse res, err, data
+        model
+          .fetchAll()
+          .then((data) -> sendResponse(res, null, data))
+          .catch((err) -> sendResponse(res, err))
     }
     {
       name: 'read'
       method: 'get'
       url: endpoint.singular
       handler: (req, res) ->
-        query = {}
-        query.where = id: req.params.id
-        query.include = JSON.parse req.query.include if req.query.include?
-
-        manager.read query, (err, data) ->
-          sendResponse res, err, data
+        model
+          .where(id: req.params.id)
+          .fetch()
+          .then((data) -> sendResponse(res, null, data))
+          .catch((err) -> sendResponse(res, err))
     }
     {
       name: 'create'
       method: 'post'
       url: endpoint.plural
       handler: (req, res) ->
-        manager.create req.body, (err, data) ->
-          sendResponse res, err, data
+        model
+          .forge(req.body)
+          .save()
+          .then((data) -> sendResponse(res, null, data))
+          .catch((err) -> sendResponse(res, err))
     }
     {
       name: 'update'
       method: 'put'
       url: endpoint.singular
       handler: (req, res) ->
-        manager.update id: req.params.id, req.body, (err, data) ->
-          sendResponse res, err, data
-    }
-    {
-      name: 'updateMultiple'
-      method: 'put'
-      url: endpoint.plural
-      handler: (req, res, next) ->
-        try
-          values = JSON.parse req.body.values
-        catch
-          err = new Error 'Invalid JSON data sent to updateMultiple route.'
-          return sendResponse res, err
+        values = req.body
+        values.id = req.params.id
 
-        manager.updateMultiple values, (err, data) ->
-          sendResponse res, err, data
+        model
+          .forge(values)
+          .save()
+          .then((data) -> sendResponse(res, null, data))
+          .catch((err) -> sendResponse(res, err))
     }
     {
       name: 'delete'
       method: 'delete'
       url: endpoint.singular
       handler: (req, res) ->
-        manager.del where: id: req.params.id, (err, data) ->
-          sendResponse res, err, data
+        model
+          .forge(id: req.params.id)
+          .destroy()
+          .then((data) -> sendResponse(res, null, data))
+          .catch((err) -> sendResponse(res, err))
     }
   ]
 
