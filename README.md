@@ -1,8 +1,8 @@
 # bald
 REST API generator using [knex](http://www.knexjs.org/) models in [express.js](http://expressjs.com/).
 
-[![NPM](https://nodei.co/npm/bald-knex.png?downloads=true)](https://nodei.co/npm/bald/)
-[![Dependency Status](https://david-dm.org/phyramid/bald-knex.svg)](https://david-dm.org/phyramid/bald-knex)
+[![NPM](https://nodei.co/npm/bald-knex.png?downloads=true)](https://nodei.co/npm/bald-knex/)
+[![Dependency Status](https://david-dm.org/petrutoader/bald-knex.svg)](https://david-dm.org/petrutoader/bald-knex)
 
 
 ### Installing via NPM
