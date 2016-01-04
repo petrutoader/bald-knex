@@ -1,5 +1,4 @@
 inflect = require 'inflect'
-_ = require 'lodash'
 
 Controller = require './Controller'
 BaldError = require './Error'
