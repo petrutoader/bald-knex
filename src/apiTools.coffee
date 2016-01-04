@@ -1,5 +1,5 @@
 _ = require 'underscore'
-BaldError = require './error'
+BaldError = require './Error'
 
 ###
 API error format:
@@ -58,7 +58,7 @@ sendResponse = (res, err, data) ->
   * `data` [Object]
   ###
   response = {}
-  response.data = data if data
+  response.data = data || {}
   statusCode = 200
 
   if err

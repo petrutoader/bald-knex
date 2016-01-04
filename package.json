@@ -6,7 +6,7 @@
   "contributors": [
     "Vlad-Ștefan Harbuz <vlad@vladh.net>"
   ],
-  "main": "lib/index.js",
+  "main": "lib/Resource.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/petrutoader/bald-knex.git"
@@ -39,7 +39,8 @@
     "istanbul": "^0.3.17",
     "knex": "^0.9.0",
     "mocha": "^2.2.5",
-    "request": "^2.60.0"
+    "request": "^2.60.0",
+    "sqlite3": "^3.1.1"
   },
   "homepage": "https://github.com/petrutoader/bald-knex",
   "scripts": {

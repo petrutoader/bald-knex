@@ -1,64 +1,85 @@
-{sendResponse} = require './apiTools'
-{handleError} = require './common'
+async = require 'async'
 
-BaldError = require './error'
+ApiTools = require './ApiTools'
+BaldError = require './Error'
 
-module.exports = (app, endpoint, model, middleware) ->
+sendResponse = ApiTools.sendResponse
+
+module.exports = ({app, knex, endpoints, model, middleware}) ->
   routes = [
     {
       name: 'list'
       method: 'get'
-      url: endpoint.plural
+      url: endpoints.plural
       handler: (req, res) ->
-        model
-          .fetchAll()
+        knex(model)
+          .select()
           .then((data) -> sendResponse(res, null, data))
           .catch((err) -> sendResponse(res, err))
     }
     {
       name: 'read'
       method: 'get'
-      url: endpoint.singular
+      url: endpoints.singular
       handler: (req, res) ->
-        model
+        knex(model)
+          .select()
           .where(id: req.params.id)
-          .fetch()
-          .then((data) -> sendResponse(res, null, data))
+          .then(([data]) -> sendResponse(res, null, data))
           .catch((err) -> sendResponse(res, err))
     }
     {
       name: 'create'
       method: 'post'
-      url: endpoint.plural
+      url: endpoints.plural
       handler: (req, res) ->
-        model
-          .forge(req.body)
-          .save()
-          .then((data) -> sendResponse(res, null, data))
-          .catch((err) -> sendResponse(res, err))
+        async.waterfall [
+          (done) ->
+            knex(model)
+              .insert(req.body)
+              .then(([id]) -> done(null, id))
+              .catch(done)
+          (id, done) ->
+            knex(model)
+              .select()
+              .where(id: id)
+              .then((data) -> done(null, data))
+              .catch(done)
+        ], (err, data) ->
+          sendResponse(res, err, data)
     }
     {
       name: 'update'
       method: 'put'
-      url: endpoint.singular
+      url: endpoints.singular
       handler: (req, res) ->
         values = req.body
         values.id = req.params.id
 
-        model
-          .forge(values)
-          .save()
-          .then((data) -> sendResponse(res, null, data))
-          .catch((err) -> sendResponse(res, err))
+        async.waterfall [
+          (done) ->
+            knex(model)
+              .where(id: values.id)
+              .update(values)
+              .then((data) -> done())
+              .catch(done)
+          (done) ->
+            knex(model)
+              .where(id: values.id)
+              .select()
+              .then((data) -> done(null, data))
+              .catch(done)
+        ], (err, data) ->
+          sendResponse(res, err, data)
     }
     {
       name: 'delete'
       method: 'delete'
-      url: endpoint.singular
+      url: endpoints.singular
       handler: (req, res) ->
-        model
-          .forge(id: req.params.id)
-          .destroy()
+        knex(model)
+          .where(id: req.params.id)
+          .del()
           .then((data) -> sendResponse(res, null, data))
           .catch((err) -> sendResponse(res, err))
     }

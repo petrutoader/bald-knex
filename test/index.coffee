@@ -7,16 +7,12 @@ request = require('request')
 expect = chai.expect
 
 
-Bald = require('../src')
-ApiTools = require('../src/apiTools')
-Common = require('../src/common')
-Association = require('../src/association')
+Bald = require('../src/Resource')
+ApiTools = require('../src/ApiTools')
 
 chai.config.includeStack = true
 
 test =
-  models: {}
-  Sequelize: Sequelize
   initializeDatabase: (done) ->
     test.db
       .sync({force: true})
@@ -59,57 +55,10 @@ describe 'Bald initialization', ->
 
 describe 'Bald resources', ->
   before ->
-    test.models.User = test.db.define 'User',
-      username:
-        type: test.Sequelize.STRING
-        allowNull: false
-      email:
-        type: test.Sequelize.STRING
-        unique: msg: 'not-unique'
-        validate: isEmail: true
-
-    test.models.UserError = test.dbError.define 'User',
-      username:
-        type: test.Sequelize.STRING
-        allowNull: false
-      email:
-        type: test.Sequelize.STRING
-        unique: msg: 'not-unique'
-        validate: isEmail: true
-
-    test.models.Family = test.db.define 'Family',
-      name:
-        type: test.Sequelize.STRING
-        allowNull: false
-      isObama:
-        type: test.Sequelize.STRING
-
-    test.models.Cloth = test.db.define 'Cloth',
-      name:
-        type: test.Sequelize.STRING
-        allowNull: false
-
-    test.models.Friend = test.db.define 'Friend',
-      name:
-        type: test.Sequelize.STRING
-        allowNull: false
-
-    test.models.Document = test.db.define 'Document', {}
-
-    test.models.User.hasOne test.models.Family
-    test.models.User.hasMany test.models.Cloth
-    test.models.Friend.belongsToMany test.models.User, through: 'IncludesFriend'
-
-    test.models.Document.belongsTo test.models.User, as: 'DocumentIssuer', foreignKey: 'DocumentIssuerId'
-    test.models.Document.belongsTo test.models.User, as: 'DocumentRecepient', foreignKey: 'DocumentRecepientId'
-
-    test.models.Family.belongsTo test.models.User
-    test.models.Cloth.belongsTo test.models.User
-
-    test.models.User.belongsToMany test.models.Friend, through: 'IncludesFriend'
-
-    test.models.User.hasMany test.models.Document, as: 'IssuedDocument', foreignKey: 'DocumentIssuerId'
-    test.models.User.hasMany test.models.Document, as: 'ReceivedDocument', foreignKey: 'DocumentRecepientId'
+    knex.schema
+      .createTableIfNotExists 'User', (table) ->
+        table.increments('id').primary()
+        table.string('name')
 
   beforeEach (done) ->
     test.initializeDatabase ->
@@ -532,139 +481,7 @@ describe 'Bald resources', ->
             data = JSON.parse body
             expect(data.data).to.eql(1)
             done()
-  describe 'Associations', ->
-    it 'should throw an error when attempting to associate with an inexistent resource', (done) ->
-      expect(Association.attempt.bind(Association, [null, null, null, null])).to.throw('Attempted to associate with an inexistent resource.')
-      done()
-    it 'should throw an error when a attempt is made with a non-existent model name', (done) ->
-      test.userResource.create {username: 'Alfred'}, (err, data) ->
-        attempt = Association.attempt.bind(Association, test.models.Friend, data, {'User.set': 1}, () ->)
-        expect(attempt).to.throw('User does not exist, try singularizing or pluralizing it!')
-        done()
 
-    it 'should throw an error when an undefined association is attempted', (done) ->
-      test.userResource.create {username: 'Alfred'}, (err, data) ->
-        attempt = Association.associateModels.bind(Association, [{name: {singular: 'User', plural: 'Users'}, method: 'set', value: 1}], data, test.models.User, () ->)
-        expect(attempt).to.throw('Association unavailable.')
-        done()
-
-    it 'should throw an error when an unavailable model association method is attempted', (done) ->
-      test.userResource.create {username: 'Alfred'}, (err, data) ->
-        attempt = Association.associateModels.bind(Association, [{name: {singular: 'Family', plural: 'Family'}, method: 'add', value: 1}], data, test.models.User, () ->)
-        expect(attempt).to.throw('Method unavailable for model.')
-        done()
-    describe 'hasOne relations', ->
-      it 'should be able to associate two models with a hasOne relation', (done) ->
-        test.familyResource.create {name: 'Adams'}, (err, data) ->
-          test.userResource.create {username: 'Morty', 'Family.set': data.id}, (err, data) ->
-            expect(data.get(null, {plain: true}).Family?).to.eql(true)
-            done()
-      it 'should be able to associate two models with a hasOne relation in a reverse manner', (done) ->
-        test.userResource.create {username: 'Morty'}, (err, data) ->
-          test.familyResource.create {name: 'Adams', 'User.set': 1}, (err, data) ->
-            test.familyResource.read 1, (err, data) ->
-              expect(data.get(null, {plain:true}).UserId).to.eql(1)
-              done()
-
-    describe 'hasMany relations', ->
-      it 'should be able to associate two models with a hasMany relation with `set`', (done) ->
-        test.clothResource.create {name: 'Pants'}, (err, data) ->
-          test.clothResource.create {name: 'Shirts'}, (err, data) ->
-            test.clothResource.create {name: 'Hats'}, (err, data) ->
-              test.userResource.create {username: 'John', 'Cloths.set': [1,2,3]}, (err, data) ->
-                expect(data.get(null, {plain: true}).Cloths.length).to.eql(3)
-                done()
-      it 'should be able to associate two models with a hasMany relation with `add`', (done) ->
-        test.clothResource.create {name: 'Pants'}, (err, data) ->
-          test.clothResource.create {name: 'Shirts'}, (err, data) ->
-            test.clothResource.create {name: 'Hats'}, (err, data) ->
-              test.userResource.create {username: 'John', 'Cloths.add': [1,2,3]}, (err, data) ->
-                expect(data.get(null, {plain: true}).Cloths.length).to.eql(3)
-                done()
-
-      it 'should be able to deassociate two models with a hasMany relation with `remove` and remove one element', (done) ->
-        test.clothResource.create {name: 'Pants'}, (err, data) ->
-          test.clothResource.create {name: 'Shirts'}, (err, data) ->
-            test.clothResource.create {name: 'Hats'}, (err, cloth) ->
-              test.userResource.create {username: 'John', 'Cloths.add': [1,2,3]}, (err, data) ->
-                test.userResource.update id: 1, {'Cloths.remove': 3}, (err, data) ->
-                  expect(data.get(null, {plain: true}).Cloths.length).to.eql(2)
-                  done()
-
-      it 'should be able to deassociate two models with a hasMany relation with `remove` and remove multiple elements', (done) ->
-        test.clothResource.create {name: 'Pants'}, (err, data) ->
-          test.clothResource.create {name: 'Shirts'}, (err, data) ->
-            test.clothResource.create {name: 'Hats'}, (err, cloth) ->
-              test.userResource.create {username: 'John', 'Cloths.add': [1,2,3]}, (err, data) ->
-                test.userResource.update id: 1, {username: 'John', 'Cloths.remove': [2,3]}, (err, data) ->
-                  expect(data.get(null, {plain: true}).Cloths.length).to.eql(1)
-                  done()
-
-      it 'should be able to associate two models with a hasMany relation in a reverse manner', (done) ->
-        test.userResource.create {username: 'John'}, (err, data) ->
-          test.clothResource.create {name: 'Pants', 'User.set': 1}, (err, data) ->
-            expect(data.UserId).to.eql(1)
-            done()
-
-    describe 'belongsToMany relations', ->
-      describe 'through', ->
-        it 'should be able to associate two models with a belongsToMany relation with `set`', (done) ->
-          test.friendResource.create {name: 'John'}, (err, data) ->
-            test.userResource.create {username: 'Alfred', 'Friends.set': 1}, (err, data) ->
-              expect(data.Friends.length).to.eql(1)
-              done()
-
-        it 'should be able to associate two models with a belongsToMany relation with `add`', (done) ->
-          test.friendResource.create {name: 'John'}, (err, data) ->
-            test.friendResource.create {name: 'John'}, (err, data) ->
-              test.userResource.create {username: 'Alfred', 'Friends.add': [1,2]}, (err, data) ->
-                expect(data.Friends.length).to.eql(2)
-                done()
-
-        it 'should be able to deassociate two models with a belongsToMany relation with `remove` and remove one element', (done) ->
-          test.friendResource.create {name: 'John'}, (err, data) ->
-            test.friendResource.create {name: 'Batman'}, (err, data) ->
-              test.userResource.create {username: 'John', 'Friends.add': [1,2]}, (err, data) ->
-                # John you suck, Batman is cooler.
-                test.userResource.update id: 1, {'Friends.remove': 1}, (err, data) ->
-                  expect(data.get(null, {plain: true}).Friends.length).to.eql(1)
-                  done()
-
-        it 'should be able to deassociate two models with a belongsToMany relation with `remove` and remove one element', (done) ->
-          test.friendResource.create {name: 'John'}, (err, data) ->
-            test.friendResource.create {name: 'Snitch'}, (err, data) ->
-              test.friendResource.create {name: 'Doe'}, (err, data) ->
-                test.userResource.create {username: 'John', 'Friends.add': [1,2,3]}, (err, data) ->
-                  test.userResource.update id: 1, {'Friends.remove': [1,2]}, (err, data) ->
-                    expect(data.get(null, {plain: true}).Friends.length).to.eql(1)
-                    done()
-
-        it 'should be able to associate two models with a belongsToMany relation in a reverse manner', (done) ->
-          test.userResource.create {username: 'Alfred'}, (err, data) ->
-            test.friendResource.create {name: 'Carmen', 'Users.set': 1}, (err, data) ->
-              expect(data.get(null, {plain:true}).Users.length).to.eql(1)
-              done()
-
-      describe 'as', ->
-        it 'should be able to associate two models with `as` from the owner with `set`', (done) ->
-          test.documentResource.create {}, (err, data) ->
-            test.documentResource.create {}, (err, data) ->
-              test.userResource.create {username: 'Andrew', 'IssuedDocument.set': 1, 'ReceivedDocument.set': 2}, (err, data) ->
-                expect(data.ReceivedDocument.length == 1 && data.IssuedDocument.length == 1).to.eql(true)
-                done()
-        it 'should be able to associate two models with `as` from the owner with `add`', (done) ->
-          test.documentResource.create {}, (err, data) ->
-            test.documentResource.create {}, (err, data) ->
-              test.userResource.create {username: 'Andrew', 'IssuedDocument.set': [1,2]}, (err, data) ->
-                expect(data.IssuedDocument.length == 2).to.eql(true)
-                done()
-        it 'should be able to associate two model with `as` with `set` in a reverse manner', (done) ->
-          test.userResource.create {username: 'PHYRAMID'}, (err, data) ->
-            test.userResource.create {username: 'MICROSOFT'}, (err, data) ->
-              test.documentResource.create {'DocumentIssuer.set': 1, 'DocumentRecepient.set': 2}, (err, document) ->
-                document = document.get(null, plain: true)
-                expect(document.DocumentIssuer? && document.DocumentRecepient?).to.eql(true)
-                done()
   describe 'Route error handling', ->
     describe 'sendResponse()', ->
       it 'should return an error code when `res` is not provided', (done) ->
