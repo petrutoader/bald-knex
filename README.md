@@ -11,10 +11,30 @@ npm install bald-knex
 ```
 
 ### Getting started
+
+Using bald is really easy, let's take the following example:
+
+We have a table called `Users` we'd like to expose to the API:
+
+```javascript
+bald = new Bald({app: app, knex: knex})
+
+bald.resource({
+  model: 'Users'
+});
+```
+
+That's it! You can now create, read, update and delete using the newly created API. You can check them at `/api/Users/` and `/api/Users/:pk` where `:pk` is the primary key of the table.
+
+### Primary keys
+
+Sometimes you may want to set a different primary key than `id`, for that you can set the `primaryKey` parameter in the resource initialization as follows:
+
 ```javascript
 bald.resource({
-  model: userModel
-});
+  model: 'Users'
+  primaryKey: 'id'
+})
 ```
 
 ### Middleware support
@@ -45,7 +65,7 @@ You do not need to declare all the routes middleware if none is needed.
 
 Following the same method as in the manager, you `PUT` or `POST` the data to the endpoint with `x-www-form-urlencoded`.
 
-### Manager and REST API
+### REST API
 
 Available routes are listed below:
 

@@ -5,7 +5,7 @@ BaldError = require './Error'
 
 sendResponse = ApiTools.sendResponse
 
-module.exports = ({app, knex, endpoints, model, middleware}) ->
+module.exports = ({app, knex, endpoints, model, primaryKey, middleware}) ->
   routes = [
     {
       name: 'list'
@@ -22,9 +22,12 @@ module.exports = ({app, knex, endpoints, model, middleware}) ->
       method: 'get'
       url: endpoints.singular
       handler: (req, res) ->
+        where = {}
+        where[primaryKey] = req.params.pk
+
         knex(model)
           .select()
-          .where(id: req.params.id)
+          .where(where)
           .then(([data]) -> sendResponse(res, null, data))
           .catch((err) -> sendResponse(res, err))
     }
@@ -40,10 +43,13 @@ module.exports = ({app, knex, endpoints, model, middleware}) ->
               .then(([id]) -> done(null, id))
               .catch(done)
           (id, done) ->
+            where = {}
+            where[primaryKey] = id
+
             knex(model)
               .select()
-              .where(id: id)
-              .then((data) -> done(null, data))
+              .where(where)
+              .then(([data]) -> done(null, data))
               .catch(done)
         ], (err, data) ->
           sendResponse(res, err, data)
@@ -54,20 +60,23 @@ module.exports = ({app, knex, endpoints, model, middleware}) ->
       url: endpoints.singular
       handler: (req, res) ->
         values = req.body
-        values.id = req.params.id
+        values[primaryKey] = req.params.pk
+
+        where = {}
+        where[primaryKey] = req.params.pk
 
         async.waterfall [
           (done) ->
             knex(model)
-              .where(id: values.id)
+              .where(where)
               .update(values)
               .then((data) -> done())
               .catch(done)
           (done) ->
             knex(model)
-              .where(id: values.id)
+              .where(where)
               .select()
-              .then((data) -> done(null, data))
+              .then(([data]) -> done(null, data))
               .catch(done)
         ], (err, data) ->
           sendResponse(res, err, data)
@@ -77,8 +86,11 @@ module.exports = ({app, knex, endpoints, model, middleware}) ->
       method: 'delete'
       url: endpoints.singular
       handler: (req, res) ->
+        where = {}
+        where[primaryKey] = req.params.pk
+
         knex(model)
-          .where(id: req.params.id)
+          .where(where)
           .del()
           .then((data) -> sendResponse(res, null, data))
           .catch((err) -> sendResponse(res, err))
