@@ -2,6 +2,7 @@
 REST API generator using [knex](http://www.knexjs.org/) for [express.js](http://expressjs.com/).
 
 [![NPM](https://nodei.co/npm/bald-knex.png?downloads=true)](https://nodei.co/npm/bald-knex/)
+
 [![Dependency Status](https://david-dm.org/petrutoader/bald-knex.svg)](https://david-dm.org/petrutoader/bald-knex)
 
 
