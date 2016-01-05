@@ -1,4 +1,4 @@
-# bald
+# bald-knex
 REST API generator using [knex](http://www.knexjs.org/) for [express.js](http://expressjs.com/).
 
 [![NPM](https://nodei.co/npm/bald-knex.png?downloads=true)](https://nodei.co/npm/bald-knex/)
