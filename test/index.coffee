@@ -5,8 +5,8 @@ chai = require('chai')
 request = require('request')
 expect = chai.expect
 
-Bald = require('../src/Resource')
-ApiTools = require('../src/ApiTools')
+Bald = require('../lib/Resource')
+ApiTools = require('../lib/ApiTools')
 
 chai.config.includeStack = true
 
