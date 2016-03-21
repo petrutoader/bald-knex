@@ -1,9 +1,14 @@
 async = require 'async'
+_ = require 'underscore'
 
 ApiTools = require './ApiTools'
 BaldError = require './Error'
 
 sendResponse = ApiTools.sendResponse
+
+processValue = (value) ->
+  return null if value == '$bald$null'
+  return value
 
 module.exports = ({app, knex, endpoints, model, primaryKey, middleware}) ->
   routes = [
@@ -36,10 +41,11 @@ module.exports = ({app, knex, endpoints, model, primaryKey, middleware}) ->
       method: 'post'
       url: endpoints.plural
       handler: (req, res) ->
+        values = _.mapObject(req.body, processValue)
         async.waterfall [
           (done) ->
             knex(model)
-              .insert(req.body)
+              .insert(values)
               .then(([id]) -> done(null, id))
               .catch(done)
           (id, done) ->
@@ -59,7 +65,7 @@ module.exports = ({app, knex, endpoints, model, primaryKey, middleware}) ->
       method: 'put'
       url: endpoints.singular
       handler: (req, res) ->
-        values = req.body
+        values = _.mapObject(req.body, processValue)
         values[primaryKey] = req.params.pk
 
         where = {}

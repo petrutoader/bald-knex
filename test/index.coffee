@@ -17,7 +17,7 @@ Fixture =
     Fixture.app.use(bodyParser.urlencoded({ extended: false }))
     Fixture.server = http.createServer(Fixture.app)
 
-    Fixture.server.listen 0, '127.0.0.1', () ->
+    Fixture.server.listen 0, '127.0.0.1', ->
       Fixture.baseUrl =
         "http://#{Fixture.server.address().address}:#{Fixture.server.address().port}"
       done()
@@ -75,7 +75,7 @@ describe 'Bald resources', ->
 
   describe 'REST API', ->
     describe 'list', ->
-      it 'should list data when called', (done) ->
+      it 'should list data', (done) ->
         requestData =
           url: "#{Fixture.baseUrl}/api/Users"
           method: "GET"
@@ -89,7 +89,7 @@ describe 'Bald resources', ->
           ).catch(done)
 
     describe 'read', ->
-      it 'should read data when called', (done) ->
+      it 'should read data', (done) ->
         requestData =
           url: "#{Fixture.baseUrl}/api/User/1"
           method: "GET"
@@ -97,8 +97,9 @@ describe 'Bald resources', ->
           data = JSON.parse body
           expect(data.data.name).to.eql('Alfred')
           done()
+
     describe 'create', ->
-      it 'should create data when called', (done) ->
+      it 'should create data', (done) ->
         requestData =
           url: "#{Fixture.baseUrl}/api/Users"
           form:
@@ -106,11 +107,22 @@ describe 'Bald resources', ->
           method: "POST"
         request requestData, (res, err, body) ->
           data = JSON.parse body
-          expect(data.data.id).to.eql(2)
           expect(data.data.name).to.eql('Alfredo')
           done()
+
+      it 'should create correctly transformed data (null value)', (done) ->
+        requestData =
+          url: "#{Fixture.baseUrl}/api/Users"
+          form:
+            name: '$bald$null'
+          method: "POST"
+        request requestData, (res, err, body) ->
+          data = JSON.parse body
+          expect(data.data.name).to.be.null
+          done()
+
     describe 'update', ->
-      it 'should update data when called', (done) ->
+      it 'should update data', (done) ->
         requestData =
           url: "#{Fixture.baseUrl}/api/User/1"
           form:
@@ -122,8 +134,20 @@ describe 'Bald resources', ->
           expect(data.data.name).to.eql('Lupin')
           done()
 
+      it 'should update data with the correct transformation (null value)', (done) ->
+        requestData =
+          url: "#{Fixture.baseUrl}/api/User/1"
+          form:
+            name: '$bald$null'
+          method: "PUT"
+
+        request requestData, (res, err, body) ->
+          data = JSON.parse body
+          expect(data.data.name).to.be.null
+          done()
+
     describe 'delete', ->
-      it 'should delete data when called', (done) ->
+      it 'should delete data', (done) ->
         requestData =
           url: "#{Fixture.baseUrl}/api/User/2"
           method: "DELETE"
