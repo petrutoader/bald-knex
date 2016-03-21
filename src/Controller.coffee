@@ -1,5 +1,5 @@
 async = require 'async'
-underscore = require '_'
+_ = require 'underscore'
 
 ApiTools = require './ApiTools'
 BaldError = require './Error'
