@@ -3,6 +3,8 @@ express = require('express')
 bodyParser = require('body-parser')
 chai = require('chai')
 request = require('request')
+async = require('async')
+
 expect = chai.expect
 
 Bald = require('../lib/Resource')
@@ -75,25 +77,30 @@ describe 'Bald resources', ->
 
   describe 'REST API', ->
     describe 'list', ->
-      it 'should list data', (done) ->
-        requestData =
-          url: "#{Fixture.baseUrl}/api/Users"
-          method: "GET"
-        Fixture.knex('User')
-          .insert(name: 'Alfred')
-          .then((data) ->
-            request requestData, (res, err, body) ->
+      it 'should list data', (next) ->
+        async.waterfall [
+          (done) ->
+            Fixture.knex('User').insert(name: 'Alfred').asCallback(done)
+          (data, done) ->
+            requestData =
+              url: "#{Fixture.baseUrl}/api/Users"
+              method: "GET"
+
+            request requestData, (err, res, body) ->
               data = JSON.parse body
-              expect(data.data.length).to.eql(1)
-              done()
-          ).catch(done)
+              return done(err, data)
+
+        ], (err, data) ->
+          return next(err) if err?
+          expect(data.data.length).to.eql(1)
+          return next()
 
     describe 'read', ->
       it 'should read data', (done) ->
         requestData =
           url: "#{Fixture.baseUrl}/api/User/1"
           method: "GET"
-        request requestData, (res, err, body) ->
+        request requestData, (err, res, body) ->
           data = JSON.parse body
           expect(data.data.name).to.eql('Alfred')
           done()
@@ -105,7 +112,7 @@ describe 'Bald resources', ->
           form:
             name: 'Alfredo'
           method: "POST"
-        request requestData, (res, err, body) ->
+        request requestData, (err, res, body) ->
           data = JSON.parse body
           expect(data.data.name).to.eql('Alfredo')
           done()
@@ -116,7 +123,7 @@ describe 'Bald resources', ->
           form:
             name: '$bald$null'
           method: "POST"
-        request requestData, (res, err, body) ->
+        request requestData, (err, res, body) ->
           data = JSON.parse body
           expect(data.data.name).to.be.null
           done()
@@ -129,7 +136,7 @@ describe 'Bald resources', ->
             name: 'Lupin'
           method: "PUT"
 
-        request requestData, (res, err, body) ->
+        request requestData, (err, res, body) ->
           data = JSON.parse body
           expect(data.data.name).to.eql('Lupin')
           done()
@@ -141,7 +148,7 @@ describe 'Bald resources', ->
             name: '$bald$null'
           method: "PUT"
 
-        request requestData, (res, err, body) ->
+        request requestData, (err, res, body) ->
           data = JSON.parse body
           expect(data.data.name).to.be.null
           done()
@@ -151,7 +158,7 @@ describe 'Bald resources', ->
         requestData =
           url: "#{Fixture.baseUrl}/api/User/2"
           method: "DELETE"
-        request requestData, (res, err, body) ->
+        request requestData, (err, res, body) ->
           data = JSON.parse body
           expect(data.data).to.eql(1)
           done()
