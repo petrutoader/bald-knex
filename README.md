@@ -44,19 +44,22 @@ bald.resource({
 Bald also optionally includes middleware support for each route that is declared:
 
 ```javascript
-isUser = function(req, res, next) {
-  console.log('isUser checks!');
-  next();
+isLoggedIn = function(req, res, next) {
+  if (req.user) {
+    return next();
+  } else {
+    return res.end('permission-denied')
+  }
 };
 
 bald.resource({
   model: model
   middleware: {
-    'list': [isAdmin, isUser],
-    'create': [isAdmin, isUser],
-    'read': [isUser],
-    'update': [isAdmin, isUser],
-    'delete': [isAdmin, isUser]
+    list: [isAdmin, isLoggedIn],
+    create: [isAdmin, isLoggedIn],
+    read: [isLoggedIn],
+    update: [isAdmin, isLoggedIn],
+    delete: [isAdmin, isLoggedIn]
   }
 })
 ```
@@ -71,22 +74,22 @@ Following the same method as in the manager, you `PUT` or `POST` the data to the
 
 Available routes are listed below:
 
-Manager | Method | URL | Description
-------- | -------|-----| ------------
-userManager.list | GET | /api/Users | Displays all users
-userManager.read | GET | /api/Users/1 | Displays a user, searched by id
-userManager.updateMultiple | PUT | /api/Users | Edits multiple users (JSON format)
-userManager.update({id: 1}, ... | PUT | /api/Users/1 | Edits a user
-userManager.create | POST | /api/Users | Adds a user
-userManager.del | DELETE | /api/Users/1 | Deletes a user
+Method | URL | Description
+-------|-----| ------------
+GET | /api/Users | Displays all users
+GET | /api/Users/1 | Displays a user, searched by id
+PUT | /api/Users | Edits multiple users (JSON format)
+PUT | /api/Users/1 | Edits a user
+POST | /api/Users | Adds a user
+DELETE | /api/Users/1 | Deletes a user
 
 ### Custom endpoints
 
 You can declare your own endpoints instead of letting bald pluralize the model's name. In order to do so you'll have to declare the bald resource in the following way:
 
 ```javascript
-userManager = bald.resource({
-  model: userModel,
+bald.resource({
+  model: 'User',
   endpoints: {
     plural: '/api/CoolUsers'
     singular: '/api/CoolUser/:id'
